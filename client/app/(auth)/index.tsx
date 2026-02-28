@@ -25,10 +25,24 @@ export default function Index() {
     try{
       // const response=await signInWithEmailAndPassword(auth,email,password);
       // await AsyncStorage.setItem("token",response.idToken);
-      router.replace("/(home)");
+      const response=await fetch("http://192.168.1.3:8000/api/auth/login",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            password,
+            email
+        })
+      })
+      const data=await response.json();
+      if(response.ok){
+        router.replace("/(home)");
+      }else{
+        Alert.alert(data.message);
+      }
     }catch(e){
-      console.log(e);
-      Alert.alert("Email Doesnt Exist");
+      Alert.alert("Network Issues");
     }
   }
   return (
@@ -39,7 +53,7 @@ export default function Index() {
         <Text className="text-lg font-extralight text-left ml-3 mt-3">We've Been Waiting For You</Text>
       </View>
       <View className="w-[80%]">
-        <TextInput className={`border-b-2 border-black py-3 text-lg text-gray-950 mb-3 focus:outline-none`} placeholder="Enter Your Email" textContentType="email" value={email} onChangeText={text=>setemail(text)}/>
+        <TextInput className={`border-b-2 border-black py-3 text-lg text-gray-950 mb-3 focus:outline-none`} placeholder="Enter Your Email"  value={email} onChangeText={text=>setemail(text)}/>
         <View className="flex-row border-b-2 border-black items-center mb-3 justify-between">
           <TextInput className={`w-[90%] text-lg focus:outline-none`} secureTextEntry={!showpwd} autoCapitalize="none" autoCorrect={false} value={password} textContentType="password" placeholder="Enter Your Password" onChangeText={(text)=>setpassword(text)} />
           <TouchableOpacity onPress={() => setshowpwd(!showpwd)}>
@@ -59,7 +73,7 @@ export default function Index() {
       </View>
       <View className="flex-row items-center justify-center">
       <Text className="text-base text-gray-700 font-extralight">Don't Have An Account ? </Text>
-      <Text className="text-lg font-bold cursor-pointer" onPress={()=>router.replace("(auth)/register")}> Register</Text>  
+      <Text className="text-lg font-bold cursor-pointer" onPress={()=>router.replace("/register")}> Register</Text>  
       </View>   
     </SafeAreaView>
   )

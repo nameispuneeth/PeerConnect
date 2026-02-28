@@ -24,10 +24,22 @@ export default function Login() {
       return;
     }
     try{
-    //   const response=await createUserWithEmailAndPassword(auth,email,password);
-    //   await AsyncStorage.setItem("token",response.idToken);
-    //   console.log(response);
-    //   router.replace("(home)");
+      const response=await fetch("http://192.168.1.3:8000/api/auth/register",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },body:JSON.stringify({
+          username,
+          email,
+          password
+        })
+      });
+      const data=await response.json();
+      if(response.ok){
+        router.replace("/(auth)");
+      }else{
+        Alert.alert(data.message);
+      }
     }catch(e){
       console.log(e);
     }

@@ -23,7 +23,7 @@ const courseScheme=new mongoose.Schema({
         required:true
     },
     duration:{
-        type:string,
+        type:String,
         required:true
     }
 });

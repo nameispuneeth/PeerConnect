@@ -1,6 +1,5 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
 export default function HomeLayout() {
@@ -31,10 +30,10 @@ export default function HomeLayout() {
             tabBarIcon: ({ color, size }) => <Ionicons name="add-circle-outline" size={size} color={color} />
         }}
         />
-        <Tabs.Screen name="chat" 
+        <Tabs.Screen name="store" 
         options={{
-            title: "Chat",
-            tabBarIcon: ({ color, size }) => <Ionicons name="chatbox-outline" size={size} color={color} />
+            title: "Store",
+            tabBarIcon: ({ color, size }) => <Ionicons name="bag-handle-outline" size={size} color={color} />
         }}
         />  
         <Tabs.Screen name="profile" 

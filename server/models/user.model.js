@@ -1,0 +1,54 @@
+const mongoose=require("mongoose");
+
+const userSchema=new mongoose.Schema({
+    username:{
+        type:String,
+        required:true
+    },
+    email:{
+        type:String,
+        required:true
+    },
+    password:{
+        type:String,
+        required:true
+    },
+    followers:{
+        type:Number,
+        default:0
+    },
+    following:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
+    },
+    mycourses:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Course"
+        }
+    ],
+    purchasedcourses:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Course"
+        }
+    ],
+    coins:{
+        type:Number,
+        default:200
+    },
+    mystore:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Store"
+        }
+    ],
+    purchaseditems:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Store"
+        }
+    ]
+})
+
+module.exports=mongoose.model("User",userSchema);

@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Eye, EyeOff, Square, SquareCheck } from "lucide-react-native";
 import { useNavigation,useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 

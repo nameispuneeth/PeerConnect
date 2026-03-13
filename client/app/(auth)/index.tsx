@@ -22,10 +22,11 @@ export default function Index() {
       Alert.alert("Email And Password Are Required");
       return;
     }
+    console.log(password,email);
     try{
       // const response=await signInWithEmailAndPassword(auth,email,password);
       // await AsyncStorage.setItem("token",response.idToken);
-      const response=await fetch("http://192.168.43.177:8000/api/auth/login",{
+      const response=await fetch("http://10.68.188.249:8000/api/auth/login",{
         method:"POST",
         headers:{
           "Content-Type":"application/json"
@@ -36,6 +37,7 @@ export default function Index() {
         })
       })
       const data=await response.json();
+      console.log(data);
       if(response.ok){
         router.replace("/(home)");
       }else{
@@ -45,6 +47,7 @@ export default function Index() {
       Alert.alert("Network Issues");
     }
   }
+  
   return (
     <SafeAreaView className="flex-1 gap-20 m-1 justify-center items-center space-y-10 bg-gray-100">
       <View className="text-center"> 

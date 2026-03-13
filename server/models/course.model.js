@@ -19,7 +19,7 @@ const courseScheme=new mongoose.Schema({
     },
     topics:[String],
     timeslot:{
-        type:Date,
+        type:String,
         required:true
     },
     duration:{

@@ -1,14 +1,19 @@
 const mongoose=require("mongoose");
 
 const storeSchema=new mongoose.Schema({
+    postedby:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
+    },
     title:{
         type:String,
         required:true
     },
-    image:{
-        type:String,
-        required:true
-    },
+    images:[
+        {
+            type:String,
+        }
+    ],
     bids:[
         {
             user:{
@@ -20,7 +25,7 @@ const storeSchema=new mongoose.Schema({
             }
         }
     ],
-    currCost:{
+    currcost:{
         type:Number,
         required:true,
     }

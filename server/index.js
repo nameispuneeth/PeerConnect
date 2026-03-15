@@ -33,8 +33,7 @@ async function middleware(req,res,next){
         }
     }else{
         return res.status(500).json({message:"Server Error"});
-    }
-    
+    }   
 }
 
 app.use(cors());
@@ -136,6 +135,7 @@ app.get("/api/user/myitems",middleware,async(req,res)=>{
     const id=req.user;
     try{
         const user=await User.findById(id).populate("mystore");
+
         res.status(200).json({message:"Successful",mystore:user.mystore});
 
     }catch(e){
@@ -143,6 +143,48 @@ app.get("/api/user/myitems",middleware,async(req,res)=>{
         res.status(500).json({message:"Server Error"});
     }
 })
+
+app.get("/api/user/getallitems",middleware,async(req,res)=>{
+    const id=req.user;
+    try{
+        const storeitems=(await Store.find()).filter((data)=>data.postedby!=id);
+        res.status(200).json({message:"Successful",items:storeitems});
+
+    }catch(e){
+        console.log(e);
+        res.status(500).json({message:"Server Error"});
+    }
+})
+
+app.get("/api/user/getallcourses",middleware,async(req,res)=>{
+    const id=req.user;
+    try{
+        const storeitems=(await Course.find()).filter((data)=>data.postedby!=id);
+        res.status(200).json({message:"Successful",items:storeitems});
+
+    }catch(e){
+        console.log(e);
+        res.status(500).json({message:"Server Error"});
+    }
+})
+
+app.post("/api/user/makebid",middleware,async(req,res)=>{
+    const user_id=req.user;
+    const {item_id,cost}=req.body;
+    try{
+        const item=await Store.findById(item_id);
+        if(cost<=item.currcost) return res.status(400).json({message:"Bid has to be higher than current cost"});
+        if(item.postedby==user_id) return res.status(400).json({message:"User cant bid his own item"});
+        item.bids.push({user:user_id,bid:cost});
+        item.currcost=cost;
+        await item.save();
+        res.status(200).json({message:"Successful"});
+    }catch(e){
+        console.log(e);
+        res.status(500).json({message:"Server Error"});
+    }
+})
+
 
 app.listen(8000, () => {
     console.log(`Server is running on port http://localhost:8000`);

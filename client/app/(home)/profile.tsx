@@ -1,17 +1,39 @@
-import { StyleSheet, Text, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import React from 'react'
+import { View, Text, Pressable } from "react-native";
+import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const profile = () => {
+export default function Profile() {
+  const router=useRouter();
   return (
-    <SafeAreaView>
-            <View>
-      <Text>profile</Text>
+    <SafeAreaView className="bg-gray-200  flex-1 h-screen ml-1 mt-5">
+      <View className="mb-3">
+        <Text className="text-3xl ml-3">UserName</Text>
+      </View>
+      <View className="flex flex-row mb-3">
+        <Text className="text-lg ml-3">10 Followers</Text>
+        <Text className="text-lg ml-3">.</Text> 
+        <Text className="text-lg ml-3">11 Following</Text>
+      </View>
+      <View className="flex flex-row mb-10">
+        <Text className="text-lg ml-3">10 Courses Taught</Text>
+        <Text className="text-lg ml-3">.</Text>
+        <Text className="text-lg ml-3">11 Items Sold</Text>
+      </View>
+
+    <View className="bg-gray-200 px-4">
+      <Pressable className="bg-black py-4 rounded-md mb-6 items-center" onPress={()=>router.navigate("/(home)/mycourses")}>
+        <Text className="text-white text-lg font-semibold">
+          My Courses
+        </Text>
+      </Pressable>
+
+      <Pressable className="bg-black py-4 rounded-md items-center" onPress={()=>router.navigate("/(home)/mystore")}>
+        <Text className="text-white text-lg font-semibold">
+          My Store Items
+        </Text>
+      </Pressable>
+
     </View>
     </SafeAreaView>
-  )
+  );
 }
-
-export default profile
-
-const styles = StyleSheet.create({})

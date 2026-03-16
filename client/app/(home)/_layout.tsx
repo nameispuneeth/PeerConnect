@@ -30,10 +30,10 @@ export default function HomeLayout() {
             tabBarIcon: ({ color, size }) => <Ionicons name="add-circle-outline" size={size} color={color} />
         }}
         />
-        <Tabs.Screen name="store" 
+        <Tabs.Screen name="orders" 
         options={{
-            title: "Store",
-            tabBarIcon: ({ color, size }) => <Ionicons name="bag-handle-outline" size={size} color={color} />
+            title: "Orders",
+            tabBarIcon: ({ color, size }) => <Ionicons name="bag-check-outline" size={size} color={color} />
         }}
         />  
         <Tabs.Screen name="profile" 
@@ -42,6 +42,9 @@ export default function HomeLayout() {
             tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} />
         }}
         />
+
+      <Tabs.Screen name="mycourses" options={{ href: null }} />
+      <Tabs.Screen name="mystore" options={{ href: null }} />
         
     </Tabs>
   );

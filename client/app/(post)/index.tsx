@@ -2,12 +2,12 @@ import { View, Text, TextInput, Pressable, ScrollView } from "react-native";
 import { useState } from "react";
 
 export default function NewCourse() {
-  const [title, setTitle] = useState("");
-  const [cost, setCost] = useState("");
-  const [dormitary, setDormitary] = useState("");
-  const [topics, setTopics] = useState("");
-  const [timeslot, setTimeslot] = useState("");
-  const [duration, setDuration] = useState("");
+  const [title, setTitle] = useState<string>("");
+  const [cost, setCost] = useState<string>("");
+  const [dormitary, setDormitary] = useState<string>("");
+  const [topics, setTopics] = useState<string>("");
+  const [timeslot, setTimeslot] = useState<string>("");
+  const [duration, setDuration] = useState<string>("");
 
   const handleSubmit = () => {
     const data = {
@@ -23,7 +23,8 @@ export default function NewCourse() {
   };
 
   return (
-    <ScrollView className="flex-1 justify-center bg-gray-200 px-5 py-6">
+    <ScrollView className="flex-1 bg-gray-200 px-5 py-6"
+    contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}>
 
       <Text className="text-2xl font-bold mb-6 text-center">
         Create Course

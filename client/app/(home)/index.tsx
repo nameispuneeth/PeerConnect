@@ -1,8 +1,11 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import React from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { BACKEND_URI } from '@/config/api'
 
-const index = () => {
+const Index = () => {
+  
   return (
     <SafeAreaView>
     <View>
@@ -12,6 +15,6 @@ const index = () => {
   )
 }
 
-export default index
+export default Index
 
 const styles = StyleSheet.create({})

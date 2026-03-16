@@ -22,7 +22,7 @@ router.post("/login", async (req, res) => {
             return res.status(400).json({ message: 'Invalid password' });
         }
         const token=await jwt.sign({id:user._id},secretcode);
-        return res.status(200).json({ message: 'Login successful', user,token });
+        return res.status(200).json({ message: 'Login successful',token });
     }catch(err){
         console.log(err)
         return res.status(500).json({ message: 'Internal server error' });

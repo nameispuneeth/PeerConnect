@@ -11,6 +11,7 @@ export default function Login() {
   const [username,setusername]=useState("");
   const [password,setpassword]=useState("");
   const [repassword,setrepassword]=useState("");
+  const backenduri=process.env.EXPO_PUBLIC_BACKEND_URI;
 
   const navigation=useNavigation();
   const router=useRouter();
@@ -24,7 +25,7 @@ export default function Login() {
       return;
     }
     try{
-      const response=await fetch("http://10.68.188.244:8000/api/auth/register",{
+      const response=await fetch(`${backenduri}/api/auth/register`,{
         method:"POST",
         headers:{
           "Content-Type":"application/json"

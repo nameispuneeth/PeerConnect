@@ -15,6 +15,7 @@ export default function Index() {
   const [email,setemail]=useState("");
   const [password,setpassword]=useState("");
   const router=useRouter();
+  const backenduri=process.env.EXPO_PUBLIC_BACKEND_URI;
 
   
   const HandleSubmit=async()=>{
@@ -22,11 +23,10 @@ export default function Index() {
       Alert.alert("Email And Password Are Required");
       return;
     }
-    console.log(password,email);
     try{
       // const response=await signInWithEmailAndPassword(auth,email,password);
       // await AsyncStorage.setItem("token",response.idToken);
-      const response=await fetch("http://10.68.188.249:8000/api/auth/login",{
+      const response=await fetch(`${backenduri}/api/auth/login`,{
         method:"POST",
         headers:{
           "Content-Type":"application/json"
@@ -37,13 +37,14 @@ export default function Index() {
         })
       })
       const data=await response.json();
-      console.log(data);
       if(response.ok){
+        await AsyncStorage.setItem("token",data.token);
         router.replace("/(home)");
       }else{
         Alert.alert(data.message);
       }
     }catch(e){
+      console.log(e);
       Alert.alert("Network Issues");
     }
   }
@@ -63,15 +64,8 @@ export default function Index() {
             {showpwd ? <Eye color="black" /> : <EyeOff color="black" />}
           </TouchableOpacity>
         </View>
-        <View className="flex-row items-center gap-2 mt-5">
-          <TouchableOpacity onPress={() => setremember(!remember)}>
-            {remember ? <SquareCheck /> : <Square />}
-
-          </TouchableOpacity>
-          <Text>Remember Me</Text>
-        </View>
-        <TouchableOpacity className="mt-7 text-center border-2 border-black bg-black text-white p-3 text-xl font-semibold">
-        <Text className="text-white text-center text-xl font-semibold" onPress={()=>HandleSubmit()}>Login</Text>
+        <TouchableOpacity className="mt-7 text-center border-2 border-black bg-black text-white p-3 text-xl font-semibold" onPress={()=>HandleSubmit()}>
+        <Text className="text-white text-center text-xl font-semibold">Login</Text>
         </TouchableOpacity>
       </View>
       <View className="flex-row items-center justify-center">

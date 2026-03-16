@@ -4,9 +4,9 @@ import * as ImagePicker from "expo-image-picker";
 import { Trash } from "lucide-react-native";
 
 export default function NewStoreItem() {
-  const [title, setTitle] = useState<String>("");
-  const [image, setImage] = useState<String[]>([]);
-  const [currCost, setCurrCost] = useState<String>("");
+  const [title, setTitle] = useState<string>("");
+  const [image, setImage] = useState<string[]>([]);
+  const [currCost, setCurrCost] = useState<string>("");
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -37,7 +37,8 @@ export default function NewStoreItem() {
   };
 
   return (
-    <ScrollView className="flex-1 justify-center  bg-gray-200 px-5 py-6">
+    <ScrollView className="flex-1 bg-gray-200 px-5 py-6"
+    contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}>
 
       <Text className="text-2xl font-bold mb-6 text-center">
         New Store Item

@@ -5,6 +5,11 @@ const courseScheme=new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"User"
     },
+    assignedto:{
+        type:mongoose.Schema.Types.ObjectId,
+        default:null,
+        ref:"User"
+    },
     title:{
         type:String,
         required:true,

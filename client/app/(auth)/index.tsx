@@ -24,8 +24,6 @@ export default function Index() {
       return;
     }
     try{
-      // const response=await signInWithEmailAndPassword(auth,email,password);
-      // await AsyncStorage.setItem("token",response.idToken);
       const response=await fetch(`${backenduri}/api/auth/login`,{
         method:"POST",
         headers:{
@@ -42,6 +40,7 @@ export default function Index() {
         router.replace("/(home)");
       }else{
         Alert.alert(data.message);
+        console.log(data.message)
       }
     }catch(e){
       console.log(e);
@@ -50,27 +49,27 @@ export default function Index() {
   }
   
   return (
-    <SafeAreaView className="flex-1 gap-20 m-1 justify-center items-center space-y-10 bg-gray-100">
+    <SafeAreaView className="flex-1 gap-20 m-1 justify-center items-center space-y-10 bg-slate-50 dark:bg-slate-900">
       <View className="text-center"> 
-        <Text className="text-7xl font-semibold text-left">Hi!</Text>
-        <Text className="text-7xl font-semibold text-left">Welcome</Text>
-        <Text className="text-lg font-extralight text-left ml-3 mt-3">We've Been Waiting For You</Text>
+        <Text className="text-7xl font-semibold text-left text-slate-800 dark:text-slate-100">Hi!</Text>
+        <Text className="text-7xl font-semibold text-left text-slate-800 dark:text-slate-100">Welcome</Text>
+        <Text className="text-lg font-extralight text-left ml-3 mt-3 text-slate-600 dark:text-slate-300">We&apos;ve Been Waiting For You</Text>
       </View>
       <View className="w-[80%]">
-        <TextInput className={`border-b-2 border-black py-3 text-lg text-gray-950 mb-3 focus:outline-none`} placeholder="Enter Your Email"  value={email} onChangeText={text=>setemail(text)}/>
-        <View className="flex-row border-b-2 border-black items-center mb-3 justify-between">
-          <TextInput className={`w-[90%] text-lg focus:outline-none`} secureTextEntry={!showpwd} autoCapitalize="none" autoCorrect={false} value={password} textContentType="password" placeholder="Enter Your Password" onChangeText={(text)=>setpassword(text)} />
+        <TextInput className={`border-b-2 border-slate-400 dark:border-slate-600 py-3 text-lg text-slate-800 dark:text-slate-100 mb-3 focus:outline-none bg-transparent`} placeholder="Enter Your Email" placeholderTextColor="#94a3b8" value={email} onChangeText={text=>setemail(text)}/>
+        <View className="flex-row border-b-2 border-slate-400 dark:border-slate-600 items-center mb-3 justify-between">
+          <TextInput className={`w-[90%] text-lg focus:outline-none text-slate-800 dark:text-slate-100 bg-transparent`} secureTextEntry={!showpwd} autoCapitalize="none" autoCorrect={false} value={password} textContentType="password" placeholder="Enter Your Password" placeholderTextColor="#94a3b8" onChangeText={(text)=>setpassword(text)} />
           <TouchableOpacity onPress={() => setshowpwd(!showpwd)}>
-            {showpwd ? <Eye color="black" /> : <EyeOff color="black" />}
+            {showpwd ? <Eye color="#64748b" /> : <EyeOff color="#64748b" />}
           </TouchableOpacity>
         </View>
-        <TouchableOpacity className="mt-7 text-center border-2 border-black bg-black text-white p-3 text-xl font-semibold" onPress={()=>HandleSubmit()}>
+        <TouchableOpacity className="mt-7 text-center border-2 border-primary-600 bg-primary-600 text-white p-3 text-xl font-semibold rounded-lg" onPress={()=>HandleSubmit()}>
         <Text className="text-white text-center text-xl font-semibold">Login</Text>
         </TouchableOpacity>
       </View>
       <View className="flex-row items-center justify-center">
-      <Text className="text-base text-gray-700 font-extralight">Don't Have An Account ? </Text>
-      <Text className="text-lg font-bold cursor-pointer" onPress={()=>router.replace("/register")}> Register</Text>  
+      <Text className="text-base text-slate-600 dark:text-slate-300 font-extralight">Don&apos;t Have An Account ? </Text>
+      <Text className="text-lg font-bold text-primary-600 cursor-pointer" onPress={()=>router.replace("/register")}> Register</Text>  
       </View>   
     </SafeAreaView>
   )

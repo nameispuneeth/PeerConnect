@@ -37,10 +37,10 @@ export default function NewStoreItem() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-gray-200 px-5 py-6"
+    <ScrollView className="flex-1 bg-slate-50 dark:bg-slate-900 px-5 py-6"
     contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}>
 
-      <Text className="text-2xl font-bold mb-6 text-center">
+      <Text className="text-2xl font-bold mb-6 text-center text-slate-800 dark:text-slate-100">
         New Store Item
       </Text>
 
@@ -48,7 +48,8 @@ export default function NewStoreItem() {
         placeholder="Item Title"
         value={title}
         onChangeText={setTitle}
-        className="bg-white p-4 rounded-lg mb-4"
+        className="bg-white dark:bg-slate-800 p-4 rounded-lg mb-4 text-slate-800 dark:text-slate-100 border border-gray-300 dark:border-gray-500"
+        placeholderTextColor="#94a3b8"
       />
 
       {image.length !== 0 &&
@@ -62,9 +63,9 @@ export default function NewStoreItem() {
 
             <Pressable
               onPress={() => removeImage(idx)}
-              className="absolute top-2 right-2 bg-white p-2 rounded-full"
+              className="absolute top-2 right-2 bg-slate-200 dark:bg-slate-700 p-2 rounded-full"
             >
-              <Trash size={18} color="red" />
+              <Trash size={18} color="#64748b" />
             </Pressable>
 
           </View>
@@ -73,9 +74,9 @@ export default function NewStoreItem() {
 
       <Pressable
         onPress={pickImage}
-        className="bg-white p-4 rounded-lg mb-4 items-center"
+        className="bg-white dark:bg-slate-800 p-4 rounded-lg mb-4 items-center border-2 border-dashed border-slate-400 dark:border-slate-600"
       >
-        <Text className="text-gray-700 font-medium">
+        <Text className="text-slate-600 dark:text-slate-300 font-medium">
           Select Image
         </Text>
       </Pressable>
@@ -85,12 +86,13 @@ export default function NewStoreItem() {
         keyboardType="numeric"
         value={currCost}
         onChangeText={setCurrCost}
-        className="bg-white p-4 rounded-lg mb-6"
+        className="bg-white dark:bg-slate-800 p-4 rounded-lg mb-6 text-slate-800 dark:text-slate-100  border border-gray-300 dark:border-gray-500"
+        placeholderTextColor="#94a3b8"
       />
 
       <Pressable
         onPress={handleSubmit}
-        className="bg-black py-4 rounded-lg items-center"
+        className="bg-primary-600 py-4 rounded-lg items-center"
       >
         <Text className="text-white font-semibold text-lg">
           Create Item

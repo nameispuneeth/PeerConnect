@@ -4,7 +4,7 @@ import { BACKEND_URI } from '@/config/api'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-const mystore = () => {
+const Mystore = () => {
   const [loading,setloading]=useState<boolean>(true);
   const [items,setitems]=useState<any[]>([]);
   useEffect(()=>{
@@ -36,20 +36,20 @@ const mystore = () => {
   },[])
   if(loading) return <View className='flex justify-center items-center'><ActivityIndicator/></View>
   return (
-    <SafeAreaView className='flex flex-1 min-h-screen bg-gray-200'>
-         <Text className='text-2xl font-extrabold ml-2 mt-3 mb-2'>My Courses</Text>
-          <View className='border-b-2 border-black mb-3'></View>
+    <SafeAreaView className='flex flex-1 min-h-screen bg-slate-50 dark:bg-slate-900'>
+         <Text className='text-2xl font-extrabold ml-2 mt-3 mb-2 text-slate-800 dark:text-slate-100'>My Store Items</Text>
+          <View className='border-b-2 border-slate-400 dark:border-slate-600 mb-3'></View>
           <ScrollView className='mb-10'>
           {items.map((val,idx)=>(
-            <View key={val._id || idx} className='border border-black flex flex-col mb-8 m-2 p-3 rounded-md bg-gray-100 gap-2'>
-              <Text className='text-2xl font-bold mb-2'>{val.title ?? "Untitled Course"}</Text>
+            <View key={val._id || idx} className='border border-slate-400 dark:border-slate-600 flex flex-col mb-8 m-2 p-3 rounded-md bg-white dark:bg-slate-800 gap-2'>
+              <Text className='text-2xl font-bold mb-2 text-slate-800 dark:text-slate-100'>{val.title ?? "Untitled Item"}</Text>
               <View className='flex flex-row'>
-                <Text> Current Bid Cost : </Text>
-                <Text>{val.currcost} Coins</Text>
+                <Text className='text-slate-700 dark:text-slate-300'> Current Bid Cost : </Text>
+                <Text className='text-slate-800 dark:text-slate-100'>{val.currcost} Coins</Text>
               </View>
     
               <View className='flex gap-2'>
-                <Text> Images : </Text>
+                <Text className='text-slate-700 dark:text-slate-300'> Images : </Text>
                 <View>
                   {val.images.map((img:string,i:number)=>(
                     <Image source={{uri:img}} key={`${val._id}-img-${i}`} style={{height:200,width:200}}/>
@@ -89,5 +89,5 @@ const mystore = () => {
   )
 }
 
-export default mystore
+export default Mystore
 

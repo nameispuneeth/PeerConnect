@@ -89,10 +89,10 @@ export default function NewCourse() {
   
 
   return (
-    <ScrollView className="flex-1 bg-gray-200 px-5 py-6"
+    <ScrollView className="flex-1 bg-slate-50 dark:bg-slate-900 px-5 py-6"
     contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}>
 
-      <Text className="text-2xl font-bold mb-6 text-center">
+      <Text className="text-2xl font-bold mb-6 text-center text-slate-800 dark:text-slate-100">
         Create Course
       </Text>
 
@@ -100,7 +100,8 @@ export default function NewCourse() {
         placeholder="Course Title"
         value={title}
         onChangeText={setTitle}
-        className="bg-white p-4 rounded-lg mb-4"
+        className="bg-white dark:bg-slate-800 p-4 rounded-lg mb-4 text-slate-800 dark:text-slate-100 border border-gray-300 dark:border-gray-500"
+        placeholderTextColor="#94a3b8"
       />
 
       <TextInput
@@ -108,25 +109,28 @@ export default function NewCourse() {
         value={cost}
         keyboardType="numeric"
         onChangeText={setCost}
-        className="bg-white p-4 rounded-lg mb-4"
+        className="bg-white dark:bg-slate-800 p-4 rounded-lg mb-4 text-slate-800 dark:text-slate-100 border border-gray-300 dark:border-gray-500"
+        placeholderTextColor="#94a3b8"
       />
 
       <TextInput
         placeholder="Dormitory"
         value={dormitary}
         onChangeText={setDormitary}
-        className="bg-white p-4 rounded-lg mb-4"
+        className="bg-white dark:bg-slate-800 p-4 rounded-lg mb-4 text-slate-800 dark:text-slate-100 border border-gray-300 dark:border-gray-500"
+        placeholderTextColor="#94a3b8"
       />
 
       {/* Topics Section */}
       <View className="mb-4">
-        <Text className="text-lg font-semibold mb-2">Topics</Text>
+        <Text className="text-lg font-semibold mb-2 text-slate-800 dark:text-slate-100">Topics</Text>
         <View className="flex-row gap-2">
           <TextInput
             placeholder="Add topic"
             value={topicInput}
             onChangeText={setTopicInput}
-            className="flex-1 bg-white p-3 rounded-lg"
+            className="flex-1 bg-white dark:bg-slate-800 p-3 rounded-lg text-slate-800 dark:text-slate-100 border border-gray-300 dark:border-gray-500"
+            placeholderTextColor="#94a3b8"
           />
           <Pressable
             onPress={addTopic}
@@ -141,11 +145,11 @@ export default function NewCourse() {
           {topics.map((topic, idx) => (
             <View
               key={idx}
-              className="bg-blue-100 px-3 py-2 rounded-full flex-row items-center gap-2"
+              className="bg-slate-200 dark:bg-slate-700 px-3 py-2 rounded-full flex-row items-center gap-2"
             >
-              <Text className="text-blue-800">{topic}</Text>
+              <Text className="text-slate-800 dark:text-slate-100 border border-gray-300 dark:border-gray-500">{topic}</Text>
               <Pressable onPress={() => removeTopic(idx)}>
-                <Text className="text-blue-800 font-bold">✕</Text>
+                <Text className="text-slate-600 dark:text-slate-300 font-bold">✕</Text>
               </Pressable>
             </View>
           ))}
@@ -154,12 +158,12 @@ export default function NewCourse() {
 
       {/* Timeslot Section */}
       <View className="mb-6">
-        <Text className="text-lg font-semibold mb-2">Timeslot</Text>
+        <Text className="text-lg font-semibold mb-2 text-slate-800 dark:text-slate-100 ">Timeslot</Text>
         <Pressable
           onPress={() => setShowDatePicker(true)}
-          className="bg-white p-4 rounded-lg"
+          className="bg-white dark:bg-slate-800 p-4 rounded-lg border border-gray-300 dark:border-gray-500"
         >
-          <Text className="text-gray-700 text-center">
+          <Text className="text-slate-600 dark:text-slate-300 text-center">
             {timeslot 
               ? `${formatDisplayDate(timeslot)} from ${timeslot.getHours().toString().padStart(2, '0')}:${timeslot.getMinutes().toString().padStart(2, '0')}`
               : "Tap to select date & time"
@@ -313,12 +317,13 @@ export default function NewCourse() {
         placeholder="Duration (e.g. 3 hours)"
         value={duration}
         onChangeText={setDuration}
-        className="bg-white p-4 rounded-lg mb-6"
+        className="bg-white dark:bg-slate-800 p-4 rounded-lg mb-6 text-slate-800 dark:text-slate-100 border border-gray-300 dark:border-gray-500"
+        placeholderTextColor="#94a3b8"
       />
 
       <Pressable
         onPress={handleSubmit}
-        className="bg-black py-4 rounded-lg items-center"
+        className="bg-primary-600 py-4 rounded-lg items-center"
       >
         <Text className="text-white font-semibold text-lg">
           Create Course

@@ -21,7 +21,7 @@ export default function Login() {
       Alert.alert("Fill All The Fields");
       return;
     }else if(password!==repassword){
-      Alert.alert("Passwords Doesnt Match");
+      Alert.alert("Passwords Doesn&apos;t Match");
       return;
     }
     try{
@@ -46,35 +46,35 @@ export default function Login() {
     }
   }
   return (
-    <SafeAreaView className="flex-1 gap-16 justify-center items-center space-y-10 bg-gray-100">
+    <SafeAreaView className="flex-1 gap-16 justify-center items-center space-y-10 bg-slate-50 dark:bg-slate-900">
       <View className="text-center">
-        <Text className="text-6xl font-semibold text-left">Let's</Text>
-        <Text className="text-6xl font-semibold text-left">Get Started</Text>
-        <Text className="text-lg font-extralight text-left ml-3 mt-3">We're Eager To Join You</Text>
+        <Text className="text-6xl font-semibold text-left text-slate-800 dark:text-slate-100">Let&apos;s</Text>
+        <Text className="text-6xl font-semibold text-left text-slate-800 dark:text-slate-100">Get Started</Text>
+        <Text className="text-lg font-extralight text-left ml-3 mt-3 text-slate-600 dark:text-slate-300">We&apos;re Eager To Join You</Text>
       </View>
       <View className="w-[80%]">
-        <TextInput className={`border-b-2 border-black py-3 text-lg text-gray-950 mb-3 focus:outline-none`} placeholder="Username" value={username} onChangeText={text=>setusername(text)} />
-        <TextInput className={`border-b-2 border-black py-3 text-lg text-gray-950 mb-3 focus:outline-none`} placeholder="Email" value={email} onChangeText={text=>setemail(text)} />
-        <View className="flex-row border-b-2 border-black items-center justify-between mb-3">
-          <TextInput className={`text-lg py-3 focus:outline-none`} secureTextEntry={!showpwd} autoCapitalize="none" autoCorrect={false} textContentType="password" placeholder="Password" value={password} onChangeText={text=>setpassword(text)}/>
+        <TextInput className={`border-b-2 border-slate-400 dark:border-slate-600 py-3 text-lg text-slate-800 dark:text-slate-100 mb-3 focus:outline-none bg-transparent`} placeholder="Username" placeholderTextColor="#94a3b8" value={username} onChangeText={text=>setusername(text)} />
+        <TextInput className={`border-b-2 border-slate-400 dark:border-slate-600 py-3 text-lg text-slate-800 dark:text-slate-100 mb-3 focus:outline-none bg-transparent`} placeholder="Email" placeholderTextColor="#94a3b8" value={email} onChangeText={text=>setemail(text)} />
+        <View className="flex-row border-b-2 border-slate-400 dark:border-slate-600 items-center justify-between mb-3">
+          <TextInput className={`text-lg py-3 focus:outline-none text-slate-800 dark:text-slate-100 bg-transparent`} secureTextEntry={!showpwd} autoCapitalize="none" autoCorrect={false} textContentType="password" placeholder="Password" placeholderTextColor="#94a3b8" value={password} onChangeText={text=>setpassword(text)}/>
           <TouchableOpacity onPress={() => setshowpwd(!showpwd)}>
-            {showpwd ? <Eye color="black" /> : <EyeOff color="black" />}
+            {showpwd ? <Eye color="#64748b" /> : <EyeOff color="#64748b" />}
           </TouchableOpacity>
         </View>
-        <View className="flex-row border-b-2 border-black items-center justify-between mb-10">
-          <TextInput className={`py-3 text-lg focus:outline-none`} secureTextEntry={!showrepwd} autoCapitalize="none" autoCorrect={false} textContentType="password" placeholder="Re-Enter Password" value={repassword} onChangeText={text=>setrepassword(text)}  />
+        <View className="flex-row border-b-2 border-slate-400 dark:border-slate-600 items-center justify-between mb-10">
+          <TextInput className={`py-3 text-lg focus:outline-none text-slate-800 dark:text-slate-100 bg-transparent`} secureTextEntry={!showrepwd} autoCapitalize="none" autoCorrect={false} textContentType="password" placeholder="Re-Enter Password" placeholderTextColor="#94a3b8" value={repassword} onChangeText={text=>setrepassword(text)}  />
           <TouchableOpacity onPress={() => setshowrepwd(!showrepwd)}>
-            {showrepwd ? <Eye color="black" /> : <EyeOff color="black" />}
+            {showrepwd ? <Eye color="#64748b" /> : <EyeOff color="#64748b" />}
           </TouchableOpacity>
         </View>
         
-        <TouchableOpacity className=" text-center border-2 border-black bg-black text-white p-3 mt-5" onPress={()=>handleSubmit()}>
+        <TouchableOpacity className=" text-center border-2 border-primary-600 bg-primary-600 text-white p-3 mt-5 rounded-lg" onPress={()=>handleSubmit()}>
           <Text className="text-white text-center text-xl font-semibold">Register</Text>
         </TouchableOpacity>
       </View>
       <View className="flex-row items-center justify-center">
-      <Text className="text-base text-gray-700 font-extralight">Already Have An Account ? </Text>
-      <Text className="text-lg font-bold cursor-pointer" onPress={()=>router.replace("/(auth)")}> Login</Text>  
+      <Text className="text-base text-slate-600 dark:text-slate-300 font-extralight">Already Have An Account ? </Text>
+      <Text className="text-lg font-bold text-primary-600 cursor-pointer" onPress={()=>router.replace("/(auth)")}> Login</Text>  
       </View>      
     </SafeAreaView>
   )

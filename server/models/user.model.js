@@ -17,10 +17,10 @@ const userSchema=new mongoose.Schema({
         type:Number,
         default:0
     },
-    following:{
+    following:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User"
-    },
+    }],
     mycourses:[
         {
             type:mongoose.Schema.Types.ObjectId,

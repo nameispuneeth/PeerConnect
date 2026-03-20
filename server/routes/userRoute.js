@@ -9,7 +9,17 @@ const middleware=require("../middlewares/authMiddleware");
 
 router.use(middleware);
 
-
+router.get("/profile",async(req,res)=>{
+    const id=req.user;
+    try{
+        const user=await User.findById(id);
+        if(!user) return res.status(400).json({message:"No User Found"});
+        return res.status(200).json({message:"Successful",user:{name:user.username,followers:user.followers,following:user.following.length,courses:user.mycourses.length,items:user.mystore.length}});         
+    }catch(e){
+        console.log(e);
+        res.status(500).json({message:"Server Error"});
+    }   
+})
 
 router.post("/addcourse",async(req,res)=>{
     const id=req.user;

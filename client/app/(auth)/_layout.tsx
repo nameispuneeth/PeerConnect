@@ -13,7 +13,7 @@ export default function RootLayout() {
   useEffect(()=>{
     const checkauth=async()=>{
       const token=await AsyncStorage.getItem("token");
-      // if(token) router.replace("/(home)");
+      if(token) router.replace("/(home)");
       setloading(false);
     }
     checkauth();

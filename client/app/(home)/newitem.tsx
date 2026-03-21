@@ -1,14 +1,21 @@
-import { View, Text, TextInput, Pressable, ScrollView, Image } from "react-native";
+import { View, Text, TextInput, Pressable, ScrollView, Image, Alert } from "react-native";
 import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { Trash } from "lucide-react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useUser } from "@/constants/userContext";
 
 export default function NewStoreItem() {
+  const { setUser } = useUser();
   const [title, setTitle] = useState<string>("");
   const [image, setImage] = useState<string[]>([]);
   const [currCost, setCurrCost] = useState<string>("");
 
   const pickImage = async () => {
+    if (image.length >= 3) {
+      Alert.alert("You can only upload up to 3 images.");
+      return;
+    }
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -17,29 +24,81 @@ export default function NewStoreItem() {
     });
 
     if (!result.canceled) {
-      let curruri:string=result.assets[0].uri;
+      let curruri: string = result.assets[0].uri;
       setImage((prev) => [...prev, curruri]);
     }
   };
 
-  const removeImage = (index:Number) => {
+  const removeImage = (index: Number) => {
     setImage((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = () => {
-    const data = {
-      title,
-      image,
-      currCost: Number(currCost),
-    };
+  const handleSubmit = async () => {
+    console.log("Submitting item with title:", title);
+    let imgarr: string[] = [];
+    try {
+      const uploadPromises = image.map(async (val, idx) => {
+        const formData = new FormData();
+        formData.append("file", {
+          uri: val,
+          name: `image${idx}.jpg`,
+          type: "image/jpeg",
+        } as any);
+        formData.append("upload_preset", process.env.EXPO_PUBLIC_API_UPLOAD_PRESET as string);
+        formData.append("cloud_name", process.env.EXPO_PUBLIC_API_CLOUD_NAME as string);
+        const resp = await fetch(`https://api.cloudinary.com/v1_1/${process.env.EXPO_PUBLIC_API_CLOUD_NAME}/image/upload`, {
+          method: "POST",
+          body: formData,
+        })
+        const dta = await resp.json();
+        return dta.secure_url;
+      })
 
-    console.log(data);
+      imgarr = await Promise.all(uploadPromises);
+      console.log(imgarr);
+      const token = await AsyncStorage.getItem("token");
+      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/api/user/additem`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "authorization": token as string,
+        },
+        body: JSON.stringify({
+          title,
+          images: imgarr,
+          currcost: parseFloat(currCost),
+        }),
+      });
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        Alert.alert("Item created successfully!");
+        setUser((prevUser) => (prevUser ? {
+          ...prevUser,
+          mystore: [...prevUser.mystore, {
+            title: title,
+            currcost: parseFloat(currCost),
+            images: imgarr,
+
+          }]
+        } : null));
+        setTitle("");
+        setImage([]);
+        setCurrCost("");
+      } else {
+        Alert.alert("Failed to create item. Please try again.");
+      }
+    } catch (err) {
+      console.log("Error uploading images:", err);
+      Alert.alert("Failed to upload images. Please try again.");
+      return;
+    }
   };
 
   return (
     <ScrollView className="flex-1 bg-slate-50 dark:bg-slate-900 px-5 py-6"
-    contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}>
-
+      contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}>
+        <View className="mt-10 mb-10">
       <Text className="text-2xl font-bold mb-6 text-center text-slate-800 dark:text-slate-100">
         New Store Item
       </Text>
@@ -98,7 +157,7 @@ export default function NewStoreItem() {
           Create Item
         </Text>
       </Pressable>
-
+</View>
     </ScrollView>
   );
 }

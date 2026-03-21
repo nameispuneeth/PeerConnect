@@ -2,8 +2,10 @@ import { View, Text, TextInput, Pressable, ScrollView, Modal } from "react-nativ
 import { useState } from "react";
 import { BACKEND_URI } from "@/config/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useUser } from "@/constants/userContext";
 
 export default function NewCourse() {
+  const { setUser } = useUser();
   const [title, setTitle] = useState<string>("");
   const [cost, setCost] = useState<string>("");
   const [dormitary, setDormitary] = useState<string>("");
@@ -20,8 +22,8 @@ export default function NewCourse() {
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   };
 
-  const handleSubmit = async() => {
-    if(!timeslot || !title || !cost || !dormitary || topics.length === 0 || !duration){
+  const handleSubmit = async () => {
+    if (!timeslot || !title || !cost || !dormitary || topics.length === 0 || !duration) {
       alert("Please fill all fields and select a timeslot");
       return;
     }
@@ -30,11 +32,11 @@ export default function NewCourse() {
       cost: Number(cost),
       dormitary,
       topics,
-      timeslot:`${formatDisplayDate(timeslot)} from ${timeslot.getHours().toString().padStart(2, '0')}:${timeslot.getMinutes().toString().padStart(2, '0')}`,
+      timeslot: `${formatDisplayDate(timeslot)} from ${timeslot.getHours().toString().padStart(2, '0')}:${timeslot.getMinutes().toString().padStart(2, '0')}`,
       duration
     };
 
-    try{
+    try {
       const token = await AsyncStorage.getItem("token") || "";
       const response = await fetch(`${BACKEND_URI}/api/user/addcourse`, {
         method: "POST",
@@ -48,16 +50,29 @@ export default function NewCourse() {
       console.log(result);
       if (response.ok) {
         alert("Course created successfully");
+        setUser((prevUser) => (prevUser ? {
+          ...prevUser,
+          mycourses: [...prevUser.mycourses, {
+            title: data.title,
+            cost: data.cost,
+            dormitary: data.dormitary,
+            topics: data.topics,
+            timeslot: data.timeslot,
+            duration: data.duration
+
+          }]
+        } : null));
+
         setTitle("");
         setCost("");
         setDormitary("");
         setTopics([]);
         setTimeslot(null);
         setDuration("");
-      }else{
+      } else {
         alert(result.message || "Failed to create course");
       }
-    }catch(e){
+    } catch (e) {
       alert("Network Issues");
     }
   };
@@ -77,7 +92,7 @@ export default function NewCourse() {
     const dateTime = new Date(selectedDate);
     dateTime.setHours(parseInt(selectedHour) || 0);
     dateTime.setMinutes(parseInt(selectedMinute) || 0);
-    
+
     if (dateTime >= new Date()) {
       setTimeslot(dateTime);
       setShowDatePicker(false);
@@ -86,11 +101,11 @@ export default function NewCourse() {
     }
   };
 
-  
+
 
   return (
     <ScrollView className="flex-1 bg-slate-50 dark:bg-slate-900 px-5 py-6"
-    contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}>
+      contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}>
 
       <Text className="text-2xl font-bold mb-6 text-center text-slate-800 dark:text-slate-100">
         Create Course
@@ -139,7 +154,7 @@ export default function NewCourse() {
             <Text className="text-white font-bold text-lg">+</Text>
           </Pressable>
         </View>
-        
+
         {/* Display Topics */}
         <View className="flex-row flex-wrap gap-2 mt-3">
           {topics.map((topic, idx) => (
@@ -147,7 +162,7 @@ export default function NewCourse() {
               key={idx}
               className="bg-slate-200 dark:bg-slate-700 px-3 py-2 rounded-full flex-row items-center gap-2"
             >
-              <Text className="text-slate-800 dark:text-slate-100 border border-gray-300 dark:border-gray-500">{topic}</Text>
+              <Text className="text-slate-800 dark:text-slate-100">{topic}</Text>
               <Pressable onPress={() => removeTopic(idx)}>
                 <Text className="text-slate-600 dark:text-slate-300 font-bold">✕</Text>
               </Pressable>
@@ -164,7 +179,7 @@ export default function NewCourse() {
           className="bg-white dark:bg-slate-800 p-4 rounded-lg border border-gray-300 dark:border-gray-500"
         >
           <Text className="text-slate-600 dark:text-slate-300 text-center">
-            {timeslot 
+            {timeslot
               ? `${formatDisplayDate(timeslot)} from ${timeslot.getHours().toString().padStart(2, '0')}:${timeslot.getMinutes().toString().padStart(2, '0')}`
               : "Tap to select date & time"
             }
@@ -189,7 +204,7 @@ export default function NewCourse() {
               >
                 <Text className="text-center text-gray-600">{selectedDate.toDateString()}</Text>
               </Pressable>
-              
+
               {/* Date adjustment buttons */}
               <View className="flex-row gap-2 mb-4">
                 <Pressable

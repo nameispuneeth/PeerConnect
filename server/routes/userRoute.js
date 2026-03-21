@@ -12,9 +12,9 @@ router.use(middleware);
 router.get("/profile",async(req,res)=>{
     const id=req.user;
     try{
-        const user=await User.findById(id);
+        const user=await User.findById(id).populate("mycourses").populate("mystore").populate("purchasedcourses").populate("purchaseditems");
         if(!user) return res.status(400).json({message:"No User Found"});
-        return res.status(200).json({message:"Successful",user:{name:user.username,followers:user.followers,following:user.following.length,courses:user.mycourses.length,items:user.mystore.length}});         
+        return res.status(200).json({message:"Successful",user:{name:user.username,followers:user.followers,following:user.following.length,mycourses:user.mycourses,mystore:user.mystore,coins:user.coins,boughtcourses:user.purchasedcourses,boughtitems:user.purchaseditems}});         
     }catch(e){
         console.log(e);
         res.status(500).json({message:"Server Error"});
@@ -47,8 +47,6 @@ router.get("/mycourses",async(req,res)=>{
     try{
         const user=await User.findById(id).populate("mycourses");
         res.status(200).json({message:"Successful",mycourses:user.mycourses});
-        
-
     }catch(e){
         console.log(e);
         res.status(500).json({message:"Server Error"});

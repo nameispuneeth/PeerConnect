@@ -4,7 +4,7 @@ import React from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { BACKEND_URI } from '@/config/api'
 import { TouchableOpacity } from 'react-native'
-import { Moon, Sun } from 'lucide-react-native'
+import { Moon, Sun, Coins } from 'lucide-react-native'
 import { useTheme } from '@/constants/ThemeContext'
 
 const Index = () => {
@@ -12,17 +12,27 @@ const Index = () => {
   
   return (
     <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900">
-      <View className="flex-row justify-end p-4">
-        <TouchableOpacity 
-          onPress={toggleTheme}
-          className="p-2 rounded-full bg-slate-200 dark:bg-slate-700"
-        >
-          {theme === 'dark' ? (
-            <Sun size={24} color="#f1f5f9" />
-          ) : (
-            <Moon size={24} color="#1e293b" />
-          )}
-        </TouchableOpacity>
+      <View className="flex-row justify-between items-center px-4 py-4">
+        {/* Left side: Student Peer text */}
+        <Text className="text-xl font-bold text-slate-800 dark:text-slate-100">Student Peer</Text>
+
+        {/* Right side: Theme toggle and Coins */}
+        <View className="flex-row items-center gap-4">
+          <TouchableOpacity 
+            onPress={toggleTheme}
+            className="p-2 rounded-full bg-slate-200 dark:bg-slate-700"
+          >
+            {theme === 'dark' ? (
+              <Sun size={24} color="#f1f5f9" />
+            ) : (
+              <Moon size={24} color="#1e293b" />
+            )}
+          </TouchableOpacity>
+          <View className="flex-row items-center gap-1 bg-slate-200 dark:bg-slate-700 px-3 py-2 rounded-full">
+            <Coins size={20} color={theme === 'dark' ? '#f1f5f9' : '#1e293b'} />
+            <Text className="text-slate-800 dark:text-slate-100 font-semibold">200</Text>
+          </View>
+        </View>
       </View>
       <View className="flex-1 justify-center items-center">
         <Text className="text-2xl font-bold text-slate-800 dark:text-slate-100">Welcome to StudentPeer</Text>

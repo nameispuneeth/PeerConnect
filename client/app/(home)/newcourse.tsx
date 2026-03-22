@@ -105,7 +105,7 @@ export default function NewCourse() {
 
   return (
     <ScrollView className="flex-1 bg-slate-50 dark:bg-slate-900 px-5 py-6"
-      contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}>
+      contentContainerStyle={{ paddingVertical: 10 }}>
 
       <Text className="text-2xl font-bold mb-6 text-center text-slate-800 dark:text-slate-100">
         Create Course

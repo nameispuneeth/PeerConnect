@@ -102,8 +102,8 @@ router.get("/getallitems",async(req,res)=>{
 router.get("/getallcourses",async(req,res)=>{
     const id=req.user;
     try{
-        const storeitems=(await Course.find()).filter((data)=>data.postedby!=id);
-        res.status(200).json({message:"Successful",items:storeitems});
+        const courses=(await Course.find()).filter((data)=>data.postedby!=id);
+        res.status(200).json({message:"Successful",courses});
 
     }catch(e){
         console.log(e);

@@ -2,7 +2,7 @@ import { useState } from "react"
 import { View, Text, TextInput, TouchableOpacity ,Alert} from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Eye, EyeOff } from "lucide-react-native";
-import { useNavigation,useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 
 export default function Login() {
   const [showpwd, setshowpwd] = useState(false);
@@ -13,7 +13,6 @@ export default function Login() {
   const [repassword,setrepassword]=useState("");
   const backenduri=process.env.EXPO_PUBLIC_BACKEND_URI;
 
-  const navigation=useNavigation();
   const router=useRouter();
 
   const handleSubmit=async()=>{
@@ -46,11 +45,11 @@ export default function Login() {
     }
   }
   return (
-    <SafeAreaView className="flex-1 gap-16 justify-center items-center space-y-10 bg-slate-50 dark:bg-slate-900">
+    <SafeAreaView className="flex-1 justify-between items-center py-6 bg-slate-50 dark:bg-slate-900">
       <View className="text-center">
-        <Text className="text-6xl font-semibold text-left text-slate-800 dark:text-slate-100">Let&apos;s</Text>
-        <Text className="text-6xl font-semibold text-left text-slate-800 dark:text-slate-100">Get Started</Text>
-        <Text className="text-lg font-extralight text-left ml-3 mt-3 text-slate-600 dark:text-slate-300">We&apos;re Eager To Join You</Text>
+        <Text className="text-5xl font-semibold text-left text-slate-800 dark:text-slate-100">Let&apos;s</Text>
+        <Text className="text-5xl font-semibold text-left text-slate-800 dark:text-slate-100">Get Started</Text>
+        <Text className="text-base font-extralight text-left ml-2 mt-2 text-slate-600 dark:text-slate-300">We&apos;re Eager To Join You</Text>
       </View>
       <View className="w-[80%]">
         <TextInput className={`border-b-2 border-slate-400 dark:border-slate-600 py-3 text-lg text-slate-800 dark:text-slate-100 mb-3 focus:outline-none bg-transparent`} placeholder="Username" placeholderTextColor="#94a3b8" value={username} onChangeText={text=>setusername(text)} />
@@ -68,11 +67,11 @@ export default function Login() {
           </TouchableOpacity>
         </View>
         
-        <TouchableOpacity className=" text-center border-2 border-primary-600 bg-primary-600 text-white p-3 mt-5 rounded-lg" onPress={()=>handleSubmit()}>
+        <TouchableOpacity className=" text-center border-2 border-primary-600 bg-primary-600 text-white p-3 rounded-lg" onPress={()=>handleSubmit()}>
           <Text className="text-white text-center text-xl font-semibold">Register</Text>
         </TouchableOpacity>
       </View>
-      <View className="flex-row items-center justify-center">
+      <View className="flex-row items-center justify-center pb-2">
       <Text className="text-base text-slate-600 dark:text-slate-300 font-extralight">Already Have An Account ? </Text>
       <Text className="text-lg font-bold text-primary-600 cursor-pointer" onPress={()=>router.replace("/(auth)")}> Login</Text>  
       </View>      

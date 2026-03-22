@@ -49,7 +49,7 @@ export default function Index() {
   }
   
   return (
-    <SafeAreaView className="flex-1 gap-20 m-1 justify-center items-center space-y-10 bg-slate-50 dark:bg-slate-900">
+    <SafeAreaView className="flex-1 gap-20 justify-center items-center space-y-10 bg-slate-50 dark:bg-slate-900">
       <View className="text-center"> 
         <Text className="text-7xl font-semibold text-left text-slate-800 dark:text-slate-100">Hi!</Text>
         <Text className="text-7xl font-semibold text-left text-slate-800 dark:text-slate-100">Welcome</Text>

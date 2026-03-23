@@ -57,7 +57,7 @@ export default function Index() {
       </View>
       <View className="w-[80%]">
         <TextInput className={`border-b-2 border-slate-400 dark:border-slate-600 py-3 text-lg text-slate-800 dark:text-slate-100 mb-3 focus:outline-none bg-transparent`} placeholder="Enter Your Email" placeholderTextColor="#94a3b8" value={email} onChangeText={text=>setemail(text)}/>
-        <View className="flex-row border-b-2 border-slate-400 dark:border-slate-600 items-center mb-3 justify-between">
+        <View className="flex-row border-b-2 border-slate-400 dark:border-slate-600 py-2 items-center mb-3 justify-between">
           <TextInput className={`w-[90%] text-lg focus:outline-none text-slate-800 dark:text-slate-100 bg-transparent`} secureTextEntry={!showpwd} autoCapitalize="none" autoCorrect={false} value={password} textContentType="password" placeholder="Enter Your Password" placeholderTextColor="#94a3b8" onChangeText={(text)=>setpassword(text)} />
           <TouchableOpacity onPress={() => setshowpwd(!showpwd)}>
             {showpwd ? <Eye color="#64748b" /> : <EyeOff color="#64748b" />}

@@ -60,7 +60,7 @@ export default function Allcourses() {
                     
                   {!loading && !error && courses.length === 0 && (
                     <View className='flex-1 justify-center items-center'>
-                      <Text className='text-slate-600 dark:text-slate-400'>No Courses Available</Text>
+                      <Text className='text-slate-600 dark:text-slate-100'>No Courses Available</Text>
                     </View>
                   )}
             {courses.map((val, idx) => (

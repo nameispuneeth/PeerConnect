@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import React from 'react'
 import { TouchableOpacity } from 'react-native'
@@ -35,7 +35,7 @@ const Index = () => {
           </View>
         </View>
       </View>
-      <View className='flex flex-row justify-around mt-3'>
+      <View className='flex flex-row justify-around mt-3 mb-2'>
         <TouchableOpacity onPress={() => setActiveTab('courses')} className={`border dark:border-white px-16 py-3 rounded-lg ${activeTab === 'courses' ? 'bg-slate-200 dark:bg-slate-700' : ''}`}>
           <Text className="dark:text-white text-slate-800 font-semibold">Courses</Text>
         </TouchableOpacity>
@@ -43,7 +43,7 @@ const Index = () => {
           <Text className="dark:text-white text-slate-800 font-semibold">Store</Text>
         </TouchableOpacity>
       </View>
-      <View className="flex-1 justify-center items-center">
+      <View className="flex-1 w-full">
         {activeTab === 'courses' ? <Allcourses /> : <AllItems />}
       </View>
 
@@ -53,5 +53,3 @@ const Index = () => {
 }
 
 export default Index
-
-const styles = StyleSheet.create({})

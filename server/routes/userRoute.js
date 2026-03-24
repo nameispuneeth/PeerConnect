@@ -90,9 +90,11 @@ router.get("/myitems",async(req,res)=>{
 router.get("/getallitems",async(req,res)=>{
     const id=req.user;
     try{
-        const storeitems=(await Store.find()).filter((data)=>data.postedby!=id);
-        res.status(200).json({message:"Successful",items:storeitems});
-
+        const storeitems=(await Store.find().populate({
+            path:"bids.user",
+            select:"username"
+        })).filter((data)=>data.postedby!=id);
+        res.status(200).json({message:"Successful",items:storeitems,id});
     }catch(e){
         console.log(e);
         res.status(500).json({message:"Server Error"});

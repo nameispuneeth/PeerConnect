@@ -1,13 +1,15 @@
-import { View, Text, ScrollView, Image, Platform, TouchableOpacity, useWindowDimensions, TextInput, Modal, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Image, Platform, TouchableOpacity, useWindowDimensions, TextInput, Modal, ActivityIndicator ,Alert} from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import { BACKEND_URI } from '@/config/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import { ChevronDown } from 'lucide-react-native';
 
 
 
 export default function AllItems() {
   const { width: screenWidth } = useWindowDimensions();
+  const [userid,setuserid]=useState<string>("");
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,9 +22,10 @@ export default function AllItems() {
   const IMAGE_GAP = 12;
   const PAGE_WIDTH = IMAGE_WIDTH + IMAGE_GAP;
   const router = useRouter();
-  const [visible, setVisible] = useState(false);
+  const [activemodal, setActivemodal] = useState<string>("");
   const [input, setInput] = useState("");
   const [bidsetting, setbidsetting] = useState(false);
+  const [bidstnow, setbidstnow] = useState<Set<string>>(new Set());
 
 
   useEffect(() => {
@@ -45,6 +48,7 @@ export default function AllItems() {
         const data = await response.json();
         if (response.ok) {
           setItems(data.items || []);
+          setuserid(data.id);
           setError(null);
         }
         else {
@@ -75,14 +79,24 @@ export default function AllItems() {
           'Content-Type': 'application/json',
           'authorization': token
         },
-        body: JSON.stringify({ item_id:itemId, cost:bidAmount })
+        body: JSON.stringify({ item_id: itemId, cost: bidAmount })
       });
       const data = await response.json();
       if (response.ok) {
         alert('Bid placed successfully!');
         setItems((prevItems) =>
           prevItems.map((item) =>
-            item._id === itemId ? { ...item, currcost: bidAmount } : item
+            item._id === itemId ? { ...item, currcost: bidAmount ,bids:[
+              ...item.bids || [],
+              {
+                _id:Date.now(),
+                bid:bidAmount,
+                user:{
+                  _id:Date.now(),
+                  username:"You"
+                }
+              }
+            ]} : item
           )
         );
       } else {
@@ -182,10 +196,46 @@ export default function AllItems() {
                     <Text className='text-slate-500 dark:text-slate-400 text-sm'>No images available</Text>
                   )}
                 </View>
-                <TouchableOpacity className='bg-primary-600 p-3 rounded-lg mt-3' onPress={() => setVisible(true)}>
-                  {bidsetting ? <ActivityIndicator size="large"></ActivityIndicator> : <Text className='text-center dark:text-white text-lg font-semibold'>Bid</Text>}
+                <TouchableOpacity className='bg-primary-600 p-3 rounded-lg mt-3' onPress={() =>{
+                  if(val.bids.length!=0 && val.bids[val.bids.length-1].user._id==userid){
+                    Alert.alert("Unable To Bid","You Can't Bid Because You Made the last bid");
+                    return;
+                  }else setActivemodal(String(val._id))
+                }}>
+                  {bidsetting ? <ActivityIndicator size="large"></ActivityIndicator> : <Text className='text-center text-white text-lg font-semibold'>Bid</Text>}
                 </TouchableOpacity>
-                <Modal transparent visible={visible} animationType="fade">
+                <TouchableOpacity className='bg-primary-600 p-2 rounded-lg mt-3' onPress={() => {
+                  setbidstnow(prev => {
+                    const newset = new Set(prev);
+                    if (newset.has(val._id)) {
+                      newset.delete(val._id);
+                    } else {
+                      newset.add(val._id);
+                    }
+                    return newset;
+                  })
+                }}>
+                  <View className='flex flex-row justify-center items-center'>
+                    <Text className='text-center text-white text-lg font-semibold'>Bids Till Now </Text>
+                    <ChevronDown color={"white"} />
+                  </View>
+                </TouchableOpacity>
+
+                {bidstnow.has(itemKey) && (
+                    val.bids.length == 0 ? <View className='mt-2 bg-slate-100 dark:bg-slate-700 rounded-lg p-3 text-center'><Text className='dark:text-white text-center'>No Bids So Far...</Text></View> : 
+                    ([...val.bids].reverse().map((data: any, idx: number) => {
+                      return (
+                        <View key={idx} className='mt-2 bg-slate-100 dark:bg-slate-700 rounded-lg p-3'>
+                          <View className='flex-row justify-between py-1'>
+                            <Text className='dark:text-white'>{data.user._id==userid ? "You": data.user.username}</Text>
+                            <Text className='dark:text-white'>{data.bid} Coins</Text>
+                          </View>
+                        </View>
+                      )
+                    })
+                    )
+                )}
+                <Modal transparent visible={activemodal===String(val._id)} animationType="fade">
                   <View className="flex-1 justify-center items-center bg-black/40 px-5">
 
                     {/* Card */}
@@ -215,7 +265,7 @@ export default function AllItems() {
                         <TouchableOpacity
                           onPress={() => {
                             setInput("");
-                            setVisible(false);
+                            setActivemodal("");
                           }}
                           className="flex-1 py-3 mr-2 rounded-xl bg-slate-100 dark:bg-slate-800"
                         >
@@ -228,13 +278,12 @@ export default function AllItems() {
                         <TouchableOpacity
                           onPress={() => {
                             if (!input) return;
-                            if(parseInt(input) <= parseInt(val.currcost)) {
+                            if (parseInt(input) <= parseInt(val.currcost)) {
                               alert("Bid must be higher than current bid!");
                               return;
                             }
-                            console.log("Bid:", input);
                             setInput("");
-                            setVisible(false);
+                            setActivemodal("");
                             handleBid(val._id, input);
                           }}
                           className="flex-1 py-3 ml-2 rounded-xl bg-primary-600"
@@ -248,8 +297,8 @@ export default function AllItems() {
                   </View>
                 </Modal>
               </View>
-
             )
+
 
           })}
         </ScrollView>

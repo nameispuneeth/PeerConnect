@@ -18,7 +18,7 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setTheme] = useState<ColorSchemeName>(Appearance.getColorScheme());
+  const [theme, setTheme] = useState<ColorSchemeName>(Appearance.getColorScheme() || 'light');
 
   useEffect(() => {
     const loadTheme = async () => {
@@ -26,7 +26,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const savedTheme = await AsyncStorage.getItem('theme');
         if (savedTheme) {
           setTheme(savedTheme as ColorSchemeName);
-          Appearance.setColorScheme(savedTheme as ColorSchemeName);
+          applyTheme(savedTheme as string);
         }
       } catch (error) {
         console.error('Failed to load theme', error);
@@ -35,12 +35,27 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     loadTheme();
   }, []);
 
+  useEffect(() => {
+    applyTheme(theme || 'light');
+  }, [theme]);
+
+  const applyTheme = (themeValue: string) => {
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement;
+      if (themeValue === 'dark') {
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+      }
+    }
+  };
+
   const toggleTheme = async () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    const currentTheme = theme || 'light';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
-    Appearance.setColorScheme(newTheme);
     try {
-      await AsyncStorage.setItem('theme', newTheme || 'light');
+      await AsyncStorage.setItem('theme', newTheme);
     } catch (error) {
       console.error('Failed to save theme', error);
     }

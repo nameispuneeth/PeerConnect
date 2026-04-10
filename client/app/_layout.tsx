@@ -18,11 +18,11 @@ function RootLayoutContent() {
   const colorScheme = useColorScheme();
 
   return (
-    <View className={colorScheme === 'dark' ? 'dark' : ''} style={{ flex: 1 }}>
+    <View className={colorScheme === 'dark' ? 'dark' : ''} style={{ flex: 1 }} pointerEvents="box-none">
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(home)" options={{headerShown:false}} />
-        <Stack.Screen name="(post)" options={{headerShown:false}} />
+        <Stack.Screen name="(home)" options={{ headerShown: false }} />
+        <Stack.Screen name="(post)" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
     </View>

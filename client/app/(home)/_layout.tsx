@@ -1,3 +1,4 @@
+import "../../lib/fix-css-interlop"
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import "react-native-reanimated";
@@ -17,8 +18,8 @@ function HomeLayout() {
   const [loading, setLoading] = useState(true);
   const tintColor = useThemeColor({}, 'tint');
   const inactiveColor = useThemeColor({}, 'tabIconDefault');
-  const bgColor = useThemeColor({}, "background");   // ✅ FIX
-  const borderColor = useThemeColor({}, "border"); 
+  const bgColor = useThemeColor({}, "background");
+  const borderColor = useThemeColor({}, "border");
 
   useEffect(() => {
     setLoading(true);
@@ -35,7 +36,7 @@ function HomeLayout() {
           headers: { "authorization": token }
         });
         const data = await response.json();
-        if (response.ok){
+        if (response.ok) {
           setUser({
             name: data.user.name,
             followers: data.user.followers,
@@ -46,7 +47,7 @@ function HomeLayout() {
             boughtcourses: data.user.boughtcourses,
             boughtitems: data.user.boughtitems,
           })
-        }else{
+        } else {
           console.error("Error fetching user profile:", data.message);
           Alert.alert("Error", "Unable to fetch user data. Please try again.");
           router.replace("/(auth)");
@@ -61,7 +62,7 @@ function HomeLayout() {
     }
     checkAuth();
   }, []);
- 
+
 
   if (loading) {
     return (
@@ -119,6 +120,7 @@ function HomeLayout() {
       <Tabs.Screen name="mystore" options={{ href: null }} />
       <Tabs.Screen name="newcourse" options={{ href: null }} />
       <Tabs.Screen name="newitem" options={{ href: null }} />
+      <Tabs.Screen name="mypurchases" options={{ href: null }} />
     </Tabs>
   );
 }

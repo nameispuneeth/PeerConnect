@@ -28,6 +28,23 @@ const storeSchema=new mongoose.Schema({
     currcost:{
         type:Number,
         required:true,
+    },
+    assignedto:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User",
+        default:null
+    },
+    otp:{
+        type:String,
+        default:null
+    },
+    otpverified:{
+        type:Boolean,
+        default:false
+    },
+    coinstransferred:{
+        type:Boolean,
+        default:false
     }
 });
 

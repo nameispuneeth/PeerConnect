@@ -30,6 +30,18 @@ const courseScheme=new mongoose.Schema({
     duration:{
         type:String,
         required:true
+    },
+    otp:{
+        type:String,
+        default:null
+    },
+    otpverified:{
+        type:Boolean,
+        default:false
+    },
+    coinstransferred:{
+        type:Boolean,
+        default:false
     }
 });
 

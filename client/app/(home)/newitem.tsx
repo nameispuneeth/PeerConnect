@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Pressable, ScrollView, Image, Alert } from "react-native";
+import { View, Text, TextInput, Pressable, ScrollView, Image, Alert, ActivityIndicator } from "react-native";
 import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { Trash } from "lucide-react-native";
@@ -10,6 +10,7 @@ export default function NewStoreItem() {
   const [title, setTitle] = useState<string>("");
   const [image, setImage] = useState<string[]>([]);
   const [currCost, setCurrCost] = useState<string>("");
+  const [submitting, setSubmitting] = useState(false);
 
   const pickImage = async () => {
     if (image.length >= 3) {
@@ -34,6 +35,8 @@ export default function NewStoreItem() {
   };
 
   const handleSubmit = async () => {
+    if (submitting) return;
+    setSubmitting(true);
     console.log("Submitting item with title:", title);
     let imgarr: string[] = [];
     try {
@@ -91,7 +94,8 @@ export default function NewStoreItem() {
     } catch (err) {
       console.log("Error uploading images:", err);
       Alert.alert("Failed to upload images. Please try again.");
-      return;
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -151,10 +155,14 @@ export default function NewStoreItem() {
 
       <Pressable
         onPress={handleSubmit}
-        className="bg-primary-600 py-4 rounded-lg items-center"
+        disabled={submitting}
+        className={`py-4 rounded-lg items-center flex-row justify-center gap-2 ${submitting ? 'bg-slate-400' : 'bg-primary-600'}`}
       >
+        {submitting ? (
+          <ActivityIndicator size="small" color="white" />
+        ) : null}
         <Text className="text-white font-semibold text-lg">
-          Create Item
+          {submitting ? 'Creating...' : 'Create Item'}
         </Text>
       </Pressable>
 </View>

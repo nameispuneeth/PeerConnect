@@ -121,6 +121,8 @@ function HomeLayout() {
       <Tabs.Screen name="newcourse" options={{ href: null }} />
       <Tabs.Screen name="newitem" options={{ href: null }} />
       <Tabs.Screen name="mypurchases" options={{ href: null }} />
+
+
     </Tabs>
   );
 }

@@ -50,6 +50,7 @@ export default function AllItems() {
           }
         });
         const data = await response.json();
+        console.log(data)
         if (response.ok) {
           setItems((data.items || []).filter((item: any) => !item.assignedto));
           setuserid(data.id);
@@ -121,8 +122,8 @@ export default function AllItems() {
 
   const filteredItems = items.filter((item: any) => {
     let match = true;
-    if (filters.minCost && item.currcost < parseInt(filters.minCost)) match = false;
-    if (filters.maxCost && item.currcost > parseInt(filters.maxCost)) match = false;
+    if (filters.minCost!='' && item.currcost < Number(filters.minCost)) match = false;
+    if (filters.maxCost!='' && item.currcost > Number(filters.maxCost)) match = false;
     return match;
   });
 
@@ -147,7 +148,7 @@ export default function AllItems() {
         </View>
       )}
 
-      {!loading && !error && items.length > 0 && (
+      {!loading && !error && filteredItems.length > 0 && (
         <View className='flex-1 w-full'>
           {/* Filter Button */}
           <View className="px-4 py-2 flex-row justify-between items-center">
@@ -177,7 +178,7 @@ export default function AllItems() {
                   <Text style={{ marginBottom: 6, color: isDark ? '#cbd5e1' : '#334155', fontSize: 12, fontWeight: '500' }}>Min Cost (coins)</Text>
                   <TextInput
                     value={filters.minCost}
-                    onChangeText={(val) => setFilters({...filters, minCost: val})}
+                    onChangeText={(val) => setFilters({ ...filters, minCost: val })}
                     placeholder="Min cost"
                     keyboardType="numeric"
                     placeholderTextColor={isDark ? '#64748b' : '#94a3b8'}
@@ -196,7 +197,7 @@ export default function AllItems() {
                   <Text style={{ marginBottom: 6, color: isDark ? '#cbd5e1' : '#334155', fontSize: 12, fontWeight: '500' }}>Max Cost (coins)</Text>
                   <TextInput
                     value={filters.maxCost}
-                    onChangeText={(val) => setFilters({...filters, maxCost: val})}
+                    onChangeText={(val) => setFilters({ ...filters, maxCost: val })}
                     placeholder="Max cost"
                     keyboardType="numeric"
                     placeholderTextColor={isDark ? '#64748b' : '#94a3b8'}
@@ -247,133 +248,133 @@ export default function AllItems() {
           {filteredItems.length > 0 ? (
             <ScrollView className='mt-2' contentContainerStyle={{ paddingBottom: 28 }}>
               {filteredItems.map((val, idx) => {
-            const itemKey = val._id ? String(val._id) : `item-${idx}`;
-            const activeImageIndex = activeImageByItem[itemKey] ?? 0;
+                const itemKey = val._id ? String(val._id) : `item-${idx}`;
+                const activeImageIndex = activeImageByItem[itemKey] ?? 0;
 
-            return (
-              <View key={val._id || idx} className='border border-slate-400 dark:border-slate-600 flex flex-col mb-8 m-2 p-3 rounded-md bg-white dark:bg-slate-800 gap-2 self-center' style={{ width: CARD_WIDTH }}>
-                <Text className='text-2xl font-bold mb-2 text-slate-800 dark:text-slate-100'>{val.title ?? "Untitled Item"}</Text>
-                <View className='flex flex-row gap-2 items-center'>
-                  <Text className='text-slate-700 dark:text-slate-300'> Current Bid : </Text>
-                  <Text className='text-slate-800 dark:text-slate-100 font-semibold'>{val.currcost} Coins</Text>
-                  {val.assignedto && (
-                    <Text className='bg-green-400 text-white font-extrabold rounded-xl text-xs p-2'>Winner Assigned</Text>
-                  )}
-                </View>
-
-                <View className='flex gap-2'>
-                  {val.images && val.images.length > 0 ? (
-                    <>
-                      <View className='relative'>
-                        <ScrollView
-                          ref={(ref) => {
-                            itemScrollRefs.current[itemKey] = ref;
-                          }}
-                          horizontal
-                          showsHorizontalScrollIndicator={false}
-                          pagingEnabled
-                          snapToInterval={PAGE_WIDTH}
-                          decelerationRate='fast'
-                          contentContainerStyle={{ paddingHorizontal: 6 }}
-                          className='mt-1'
-                          onMomentumScrollEnd={(event) => {
-                            const xOffset = event.nativeEvent.contentOffset.x;
-                            const nextIndex = Math.max(0, Math.round(xOffset / PAGE_WIDTH));
-                            setActiveImageByItem((prev) => ({ ...prev, [itemKey]: nextIndex }));
-                          }}
-                        >
-                          {val.images.map((img: string, i: number) => (
-                            <View key={`${val._id}-img-${i}`} className='mr-3 rounded-xl overflow-hidden border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700'>
-                              <Image
-                                source={{ uri: img }}
-                                style={{ height: IMAGE_HEIGHT, width: IMAGE_WIDTH }}
-                                resizeMode='cover'
-                                onError={(e) => console.log('Image error:', e.nativeEvent)}
-                              />
-                            </View>
-                          ))}
-
-                        </ScrollView>
-
-                      </View>
-
-                      {val.images.length > 1 && (
-                        <View className='flex flex-row justify-center items-center mt-2'>
-                          {val.images.map((_: string, dotIndex: number) => (
-                            <View
-                              key={`${itemKey}-dot-${dotIndex}`}
-                              className={`h-2 w-2 rounded-full mx-1 ${dotIndex === activeImageIndex ? 'bg-slate-800 dark:bg-slate-100' : 'bg-slate-300 dark:bg-slate-600'}`}
-                            />
-                          ))}
-                        </View>
+                return (
+                  <View key={val._id || idx} className='border border-slate-400 dark:border-slate-600 flex flex-col mb-8 m-2 p-3 rounded-md bg-white dark:bg-slate-800 gap-2 self-center' style={{ width: CARD_WIDTH }}>
+                    <Text className='text-2xl font-bold mb-2 text-slate-800 dark:text-slate-100'>{val.title ?? "Untitled Item"}</Text>
+                    <View className='flex flex-row gap-2 items-center'>
+                      <Text className='text-slate-700 dark:text-slate-300'> Current Bid : </Text>
+                      <Text className='text-slate-800 dark:text-slate-100 font-semibold'>{val.currcost} Coins</Text>
+                      {val.assignedto && (
+                        <Text className='bg-green-400 text-white font-extrabold rounded-xl text-xs p-2'>Winner Assigned</Text>
                       )}
-                    </>
-                  ) : (
-                    <Text className='text-slate-500 dark:text-slate-400 text-sm'>No images available</Text>
-                  )}
-                </View>
-                {/* Bid Button – disabled once winner is assigned */}
-                {val.assignedto ? (
-                  <View className='bg-slate-300 dark:bg-slate-600 p-3 rounded-lg mt-3 items-center'>
-                    <Text className='text-slate-500 dark:text-slate-400 font-semibold text-lg'>🏆 Winner Assigned</Text>
-                  </View>
-                ) : (
-                  <Pressable
-                    className='bg-primary-600 p-3 rounded-xl mt-3 items-center flex-row justify-center gap-2 active:opacity-80'
-                    onPress={() => {
-                      if (val.bids?.length != 0 && val.bids?.[val.bids.length - 1]?.user?._id == userid) {
-                        Alert.alert("Unable To Bid", "You Can't Bid Because You Made the last bid");
-                        return;
-                      } else setActivemodal(String(val._id));
-                    }}
-                  >
-                    <View pointerEvents="none" style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                      {bidsetting
-                        ? <ActivityIndicator size="small" color="white" />
-                        : <Text className='text-center text-white text-lg font-semibold'>Bid</Text>
-                      }
                     </View>
-                  </Pressable>
-                )}
-                <Pressable
-                  className='bg-primary-600 p-2 rounded-xl mt-3 active:opacity-80'
-                  onPress={() => {
-                    setbidstnow(prev => {
-                      const newset = new Set(prev);
-                      if (newset.has(itemKey)) {
-                        newset.delete(itemKey);
-                      } else {
-                        newset.add(itemKey);
-                      }
-                      return newset;
-                    });
-                  }}
-                >
-                  <View pointerEvents="none" style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                    <Text className='text-center text-white text-lg font-semibold'>Bids Till Now </Text>
-                    <ChevronDown color={"white"} />
-                  </View>
-                </Pressable>
 
-                {bidstnow.has(itemKey) && (
-                  val.bids.length == 0 ? <View className='mt-2 bg-slate-100 dark:bg-slate-700 rounded-lg p-3 text-center'><Text className='dark:text-white text-center'>No Bids So Far...</Text></View> :
-                    ([...val.bids].reverse().map((data: any, idx: number) => {
-                      return (
-                        <View key={idx} className='mt-2 bg-slate-100 dark:bg-slate-700 rounded-lg p-3'>
-                          <View className='flex-row justify-between py-1'>
-                            <Text className='dark:text-white'>{data.user._id == userid ? "You" : data.user.username}</Text>
-                            <Text className='dark:text-white'>{data.bid} Coins</Text>
+                    <View className='flex gap-2'>
+                      {val.images && val.images.length > 0 ? (
+                        <>
+                          <View className='relative'>
+                            <ScrollView
+                              ref={(ref) => {
+                                itemScrollRefs.current[itemKey] = ref;
+                              }}
+                              horizontal
+                              showsHorizontalScrollIndicator={false}
+                              pagingEnabled
+                              snapToInterval={PAGE_WIDTH}
+                              decelerationRate='fast'
+                              contentContainerStyle={{ paddingHorizontal: 6 }}
+                              className='mt-1'
+                              onMomentumScrollEnd={(event) => {
+                                const xOffset = event.nativeEvent.contentOffset.x;
+                                const nextIndex = Math.max(0, Math.round(xOffset / PAGE_WIDTH));
+                                setActiveImageByItem((prev) => ({ ...prev, [itemKey]: nextIndex }));
+                              }}
+                            >
+                              {val.images.map((img: string, i: number) => (
+                                <View key={`${val._id}-img-${i}`} className='mr-3 rounded-xl overflow-hidden border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700'>
+                                  <Image
+                                    source={{ uri: img }}
+                                    style={{ height: IMAGE_HEIGHT, width: IMAGE_WIDTH }}
+                                    resizeMode='cover'
+                                    onError={(e) => console.log('Image error:', e.nativeEvent)}
+                                  />
+                                </View>
+                              ))}
+
+                            </ScrollView>
+
                           </View>
+
+                          {val.images.length > 1 && (
+                            <View className='flex flex-row justify-center items-center mt-2'>
+                              {val.images.map((_: string, dotIndex: number) => (
+                                <View
+                                  key={`${itemKey}-dot-${dotIndex}`}
+                                  className={`h-2 w-2 rounded-full mx-1 ${dotIndex === activeImageIndex ? 'bg-slate-800 dark:bg-slate-100' : 'bg-slate-300 dark:bg-slate-600'}`}
+                                />
+                              ))}
+                            </View>
+                          )}
+                        </>
+                      ) : (
+                        <Text className='text-slate-500 dark:text-slate-400 text-sm'>No images available</Text>
+                      )}
+                    </View>
+                    {/* Bid Button – disabled once winner is assigned */}
+                    {val.assignedto ? (
+                      <View className='bg-slate-300 dark:bg-slate-600 p-3 rounded-lg mt-3 items-center'>
+                        <Text className='text-slate-500 dark:text-slate-400 font-semibold text-lg'>🏆 Winner Assigned</Text>
+                      </View>
+                    ) : (
+                      <Pressable
+                        className='bg-primary-600 p-3 rounded-xl mt-3 items-center flex-row justify-center gap-2 active:opacity-80'
+                        onPress={() => {
+                          if (val.bids?.length != 0 && val.bids?.[val.bids.length - 1]?.user?._id == userid) {
+                            Alert.alert("Unable To Bid", "You Can't Bid Because You Made the last bid");
+                            return;
+                          } else setActivemodal(String(val._id));
+                        }}
+                      >
+                        <View pointerEvents="none" style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                          {bidsetting
+                            ? <ActivityIndicator size="small" color="white" />
+                            : <Text className='text-center text-white text-lg font-semibold'>Bid</Text>
+                          }
                         </View>
-                      )
-                    })
-                    )
-                )}
-              </View>
-            )
+                      </Pressable>
+                    )}
+                    <Pressable
+                      className='bg-primary-600 p-2 rounded-xl mt-3 active:opacity-80'
+                      onPress={() => {
+                        setbidstnow(prev => {
+                          const newset = new Set(prev);
+                          if (newset.has(itemKey)) {
+                            newset.delete(itemKey);
+                          } else {
+                            newset.add(itemKey);
+                          }
+                          return newset;
+                        });
+                      }}
+                    >
+                      <View pointerEvents="none" style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                        <Text className='text-center text-white text-lg font-semibold'>Bids Till Now </Text>
+                        <ChevronDown color={"white"} />
+                      </View>
+                    </Pressable>
+
+                    {bidstnow.has(itemKey) && (
+                      val.bids.length == 0 ? <View className='mt-2 bg-slate-100 dark:bg-slate-700 rounded-lg p-3 text-center'><Text className='dark:text-white text-center'>No Bids So Far...</Text></View> :
+                        ([...val.bids].reverse().map((data: any, idx: number) => {
+                          return (
+                            <View key={idx} className='mt-2 bg-slate-100 dark:bg-slate-700 rounded-lg p-3'>
+                              <View className='flex-row justify-between py-1'>
+                                <Text className='dark:text-white'>{data.user._id == userid ? "You" : data.user.username}</Text>
+                                <Text className='dark:text-white'>{data.bid} Coins</Text>
+                              </View>
+                            </View>
+                          )
+                        })
+                        )
+                    )}
+                  </View>
+                )
 
 
-          })}
+              })}
             </ScrollView>
           ) : (
             <View className='flex-1 justify-center items-center py-20'>

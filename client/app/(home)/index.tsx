@@ -14,6 +14,7 @@ const Index = () => {
   const { theme, toggleTheme } = useTheme();
   const [activeTab, setActiveTab] = React.useState<'courses' | 'store'>('courses');
   const isDark = theme === 'dark';
+  console.log("RENDER", activeTab);
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900">
@@ -48,7 +49,7 @@ const Index = () => {
             className="p-2.5 rounded-full bg-slate-200 dark:bg-slate-700 border border-slate-300 dark:border-slate-600"
             activeOpacity={0.7}
           >
-            <View pointerEvents="none">
+            <View>
               {isDark ? (
                 <Sun size={18} color="#f1f5f9" />
               ) : (
@@ -63,13 +64,19 @@ const Index = () => {
       <View className="mx-4 mb-3 flex-row bg-slate-200 dark:bg-slate-800 rounded-2xl p-1 border border-slate-300 dark:border-slate-700">
         <TouchableOpacity
           onPress={() => setActiveTab('courses')}
-          className={`flex-1 flex-row items-center justify-center gap-2 py-2.5 rounded-xl ${activeTab === 'courses'
-            ? 'bg-white dark:bg-slate-700 shadow-sm'
-            : ''
-            }`}
-          activeOpacity={0.7}
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingVertical: 10,
+            borderRadius: 12,
+            backgroundColor: activeTab === 'courses'
+              ? (isDark ? '#334155' : '#ffffff')
+              : 'transparent',
+          }}
         >
-          <View pointerEvents="none" style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <BookOpen size={16} color={
               activeTab === 'courses'
                 ? (isDark ? '#a5b4fc' : '#4f46e5')
@@ -86,13 +93,19 @@ const Index = () => {
 
         <TouchableOpacity
           onPress={() => setActiveTab('store')}
-          className={`flex-1 flex-row items-center justify-center gap-2 py-2.5 rounded-xl ${activeTab === 'store'
-            ? 'bg-white dark:bg-slate-700 shadow-sm'
-            : ''
-            }`}
-          activeOpacity={0.7}
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingVertical: 10,
+            borderRadius: 12,
+            backgroundColor: activeTab === 'store'
+              ? (isDark ? '#334155' : '#ffffff')
+              : 'transparent',
+          }}
         >
-          <View pointerEvents="none" style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <ShoppingBag size={16} color={
               activeTab === 'store'
                 ? (isDark ? '#a5b4fc' : '#4f46e5')
@@ -109,8 +122,10 @@ const Index = () => {
       </View>
 
       {/* Content */}
-      <View className="flex-1 w-full">
-        {activeTab === 'courses' ? <Allcourses /> : <AllItems />}
+      <View style={{ flex: 1 }}>
+        <View pointerEvents="box-none" style={{ flex: 1 }}>
+          {activeTab === 'courses' ? <Allcourses /> : <AllItems />}
+        </View>
       </View>
     </SafeAreaView>
   )

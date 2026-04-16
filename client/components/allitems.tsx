@@ -2,6 +2,7 @@ import { View, Text, ScrollView, Image, Platform, Pressable, useWindowDimensions
 import React, { useState, useEffect, useRef } from 'react';
 import { BACKEND_URI } from '@/config/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUser } from '@/constants/userContext';
 
 import { ChevronDown, Filter } from 'lucide-react-native';
 import { useTheme } from '@/constants/ThemeContext';
@@ -9,6 +10,7 @@ import { useTheme } from '@/constants/ThemeContext';
 
 
 export default function AllItems() {
+  const { user } = useUser();
   const { width: screenWidth } = useWindowDimensions();
   const [userid, setuserid] = useState<string>("");
   const [items, setItems] = useState<any[]>([]);
@@ -31,6 +33,8 @@ export default function AllItems() {
   const [filters, setFilters] = useState({ minCost: '', maxCost: '' });
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+
+
 
 
   useEffect(() => {
@@ -73,6 +77,11 @@ export default function AllItems() {
     const token = await AsyncStorage.getItem('token');
     if (!token) {
       setError('User not authenticated');
+      setbidsetting(false);
+      return;
+    }
+    if (user && user?.coins < Number(bidAmount)) {
+      alert('Insufficient coins');
       setbidsetting(false);
       return;
     }
@@ -122,8 +131,8 @@ export default function AllItems() {
 
   const filteredItems = items.filter((item: any) => {
     let match = true;
-    if (filters.minCost!='' && item.currcost < Number(filters.minCost)) match = false;
-    if (filters.maxCost!='' && item.currcost > Number(filters.maxCost)) match = false;
+    if (filters.minCost != '' && item.currcost < Number(filters.minCost)) match = false;
+    if (filters.maxCost != '' && item.currcost > Number(filters.maxCost)) match = false;
     return match;
   });
 

@@ -21,8 +21,8 @@ export default function NewCourse() {
   const [duration, setDuration] = useState<string>("");
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [selectedHour, setSelectedHour] = useState<string>("12");
-  const [selectedMinute, setSelectedMinute] = useState<string>("00");
+  const [selectedHour, setSelectedHour] = useState<string>(new Date().getHours().toString());
+  const [selectedMinute, setSelectedMinute] = useState<string>(new Date().getMinutes().toString());
   const [submitting, setSubmitting] = useState(false);
 
   const formatDisplayDate = (date: Date) =>

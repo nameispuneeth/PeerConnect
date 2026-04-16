@@ -6,23 +6,27 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUser } from '@/constants/userContext';
 import { Clock, MapPin, Timer, Tag, ShoppingCart, Coins, Filter, ChevronDown } from 'lucide-react-native';
 import { useTheme } from '@/constants/ThemeContext';
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 
-function parseTimeslot(str: string): Date | null {
-    try {
-        const cleaned = str.replace(' from ', ' ');
-        const d = new Date(cleaned);
-        return isNaN(d.getTime()) ? null : d;
-    } catch {
-        return null;
-    }
+dayjs.extend(customParseFormat);
+
+function parseTimeslot(str: string): dayjs.Dayjs | null {
+    const d = dayjs(str, 'MMM D, YYYY [from] HH:mm');
+    return d.isValid() ? d : null;
+}
+
+function getNowIST(): dayjs.Dayjs {
+    const now = new Date();
+    const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+    return dayjs(new Date(utcMs + 330 * 60000));
 }
 
 function isTimeslotExpired(timeslot: string): boolean {
     const d = parseTimeslot(timeslot);
     if (!d) return false;
-    return d < new Date();
+    return d.isBefore(getNowIST());
 }
-
 
 export default function Allcourses() {
     const [courses, setCourses] = useState<any[]>([]);
@@ -142,7 +146,7 @@ export default function Allcourses() {
                             <Text style={{ marginBottom: 6, color: isDark ? '#cbd5e1' : '#334155', fontSize: 12, fontWeight: '500' }}>Min Cost (coins)</Text>
                             <TextInput
                                 value={filters.minCost}
-                                onChangeText={(val) => setFilters({...filters, minCost: val})}
+                                onChangeText={(val) => setFilters({ ...filters, minCost: val })}
                                 placeholder="Min cost"
                                 keyboardType="numeric"
                                 placeholderTextColor={isDark ? '#64748b' : '#94a3b8'}
@@ -161,7 +165,7 @@ export default function Allcourses() {
                             <Text style={{ marginBottom: 6, color: isDark ? '#cbd5e1' : '#334155', fontSize: 12, fontWeight: '500' }}>Max Cost (coins)</Text>
                             <TextInput
                                 value={filters.maxCost}
-                                onChangeText={(val) => setFilters({...filters, maxCost: val})}
+                                onChangeText={(val) => setFilters({ ...filters, maxCost: val })}
                                 placeholder="Max cost"
                                 keyboardType="numeric"
                                 placeholderTextColor={isDark ? '#64748b' : '#94a3b8'}
@@ -180,7 +184,7 @@ export default function Allcourses() {
                             <Text style={{ marginBottom: 6, color: isDark ? '#cbd5e1' : '#334155', fontSize: 12, fontWeight: '500' }}>Location</Text>
                             <TextInput
                                 value={filters.location}
-                                onChangeText={(val) => setFilters({...filters, location: val})}
+                                onChangeText={(val) => setFilters({ ...filters, location: val })}
                                 placeholder="e.g., Dorm A"
                                 placeholderTextColor={isDark ? '#64748b' : '#94a3b8'}
                                 style={{
@@ -233,143 +237,144 @@ export default function Allcourses() {
                     showsVerticalScrollIndicator={false}
                 >
                     {filteredCourses.map((val, idx) => (
-                        <View
-                            key={idx}
-                            className="bg-white dark:bg-slate-800 rounded-2xl mb-4 overflow-hidden border border-slate-200 dark:border-slate-700"
-                            style={{ boxShadow: '0px 2px 8px rgba(0,0,0,0.06)', elevation: 2 }}
-                        >
-                    {/* Card Header */}
-                    <View className="bg-indigo-50 dark:bg-indigo-900/30 px-4 py-3 border-b border-indigo-100 dark:border-indigo-800/40">
-                        <Text className="text-lg font-bold text-slate-800 dark:text-slate-100">
-                            {val.title ?? 'Untitled Course'}
-                        </Text>
-                        <View className="flex-row items-center gap-1 mt-0.5">
-                            <View className="bg-amber-400 w-2 h-2 rounded-full" />
-                            <Text className="text-slate-500 dark:text-slate-400 text-xs">Available</Text>
-                        </View>
-                    </View>
-
-                    {/* Details */}
-                    <View className="px-4 py-3 gap-2.5">
-                        <View className="flex-row items-center gap-2">
-                            <Coins size={14} color={isDark ? '#fbbf24' : '#d97706'} />
-                            <Text className="text-slate-500 dark:text-slate-400 text-xs font-medium">Cost</Text>
-                            <Text className="text-amber-600 dark:text-amber-400 text-xs font-bold ml-auto">
-                                {val.cost} coins
-                            </Text>
-                        </View>
-                        <View className="flex-row items-center gap-2">
-                            <Clock size={14} color={isDark ? '#94a3b8' : '#64748b'} />
-                            <Text className="text-slate-500 dark:text-slate-400 text-xs font-medium">Timeslot</Text>
-                            <Text className="text-slate-700 dark:text-slate-200 text-xs ml-auto">{val.timeslot}</Text>
-                        </View>
-                        <View className="flex-row items-center gap-2">
-                            <Timer size={14} color={isDark ? '#94a3b8' : '#64748b'} />
-                            <Text className="text-slate-500 dark:text-slate-400 text-xs font-medium">Duration</Text>
-                            <Text className="text-slate-700 dark:text-slate-200 text-xs ml-auto">{val.duration}</Text>
-                        </View>
-                        <View className="flex-row items-center gap-2">
-                            <MapPin size={14} color={isDark ? '#94a3b8' : '#64748b'} />
-                            <Text className="text-slate-500 dark:text-slate-400 text-xs font-medium">Location</Text>
-                            <Text className="text-slate-700 dark:text-slate-200 text-xs ml-auto">{val.dormitary}</Text>
-                        </View>
-
-                        {/* Topics */}
-                        {val.topics?.length > 0 && (
-                            <View className="flex-row flex-wrap gap-1.5 mt-0.5">
-                                {val.topics.map((t: string, i: number) => (
-                                    <View
-                                        key={i}
-                                        className="bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-100 dark:border-indigo-800/40 px-2.5 py-1 rounded-full"
-                                    >
-                                        <Text className="text-indigo-600 dark:text-indigo-300 text-xs font-medium">{t}</Text>
+                        !isTimeslotExpired(val.timeslot) &&
+                        (
+                            <View
+                                key={idx}
+                                className="bg-white dark:bg-slate-800 rounded-2xl mb-4 overflow-hidden border border-slate-200 dark:border-slate-700"
+                                style={{ boxShadow: '0px 2px 8px rgba(0,0,0,0.06)', elevation: 2 }}
+                            >
+                                {/* Card Header */}
+                                <View className="bg-indigo-50 dark:bg-indigo-900/30 px-4 py-3 border-b border-indigo-100 dark:border-indigo-800/40">
+                                    <Text className="text-lg font-bold text-slate-800 dark:text-slate-100">
+                                        {val.title ?? 'Untitled Course'}
+                                    </Text>
+                                    <View className="flex-row items-center gap-1 mt-0.5">
+                                        <View className="bg-amber-400 w-2 h-2 rounded-full" />
+                                        <Text className="text-slate-500 dark:text-slate-400 text-xs">Available</Text>
                                     </View>
-                                ))}
-                            </View>
-                        )}
-                    </View>
-
-                    {/* Book Button */}
-                    <View className="px-4 pb-4">
-                        <Pressable
-                            className={`py-3.5 rounded-xl items-center flex-row justify-center gap-2 active:opacity-80 ${
-                                buyingId === val._id
-                                    ? 'bg-slate-400 dark:bg-slate-600'
-                                    : 'bg-indigo-600 dark:bg-indigo-700'
-                            }`}
-                            disabled={buyingId === val._id}
-                            onPress={() => {
-                                if (isTimeslotExpired(val.timeslot)) {
-                                    Alert.alert('⏰ Time Slot Expired', 'This session\'s time slot has already passed.');
-                                    setCourses((prev) => prev.filter((c) => c._id !== val._id));
-                                    return;
-                                }
-                                Alert.alert(
-                                    'Confirm Booking',
-                                    `Book "${val.title}" for ${val.cost} coins?`,
-                                    [
-                                        { text: 'Cancel', style: 'cancel' },
-                                        {
-                                            text: 'Confirm',
-                                            onPress: async () => {
-                                                if (isTimeslotExpired(val.timeslot)) {
-                                                    Alert.alert('⏰ Time Slot Expired', 'This session\'s time slot has already passed.');
-                                                    setCourses((prev) => prev.filter((c) => c._id !== val._id));
-                                                    return;
-                                                }
-                                                setBuyingId(val._id);
-                                                const token = await AsyncStorage.getItem('token');
-                                                try {
-                                                    const res = await fetch(`${BACKEND_URI}/api/user/buycourse`, {
-                                                        method: 'POST',
-                                                        headers: {
-                                                            'authorization': token!,
-                                                            'Content-Type': 'application/json',
-                                                        },
-                                                        body: JSON.stringify({ courseId: val._id }),
-                                                    });
-                                                    const data = await res.json();
-                                                    if (res.ok) {
-                                                        setCourses((prev) => prev.filter((c) => c._id !== val._id));
-                                                        if (user) setUser({ ...user, coins: data.coins });
-                                                        Alert.alert(
-                                                            '✅ Booked!',
-                                                            `Successfully booked "${val.title}"!\n\n📅 ${data.timeslot}\n📍 ${data.dormitary}\n\nCoins remaining: ${data.coins}`,
-                                                        );
-                                                    } else {
-                                                        Alert.alert('Error', data.message || 'Could not book course');
-                                                    }
-                                                } catch (e) {
-                                                    Alert.alert('Error', 'Network error. Please try again.');
-                                                } finally {
-                                                    setBuyingId(null);
-                                                }
-                                            },
-                                        },
-                                    ]
-                                );
-                            }}
-                        >
-                            {buyingId === val._id ? (
-                                <ActivityIndicator size="small" color="white" />
-                            ) : (
-                                <View pointerEvents="none" style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                                    <ShoppingCart size={16} color="white" />
-                                    <Text className="text-white font-bold text-sm">Book for {val.cost} coins</Text>
                                 </View>
-                            )}
-                        </Pressable>
-                    </View>
+
+                                {/* Details */}
+                                <View className="px-4 py-3 gap-2.5">
+                                    <View className="flex-row items-center gap-2">
+                                        <Coins size={14} color={isDark ? '#fbbf24' : '#d97706'} />
+                                        <Text className="text-slate-500 dark:text-slate-400 text-xs font-medium">Cost</Text>
+                                        <Text className="text-amber-600 dark:text-amber-400 text-xs font-bold ml-auto">
+                                            {val.cost} coins
+                                        </Text>
+                                    </View>
+                                    <View className="flex-row items-center gap-2">
+                                        <Clock size={14} color={isDark ? '#94a3b8' : '#64748b'} />
+                                        <Text className="text-slate-500 dark:text-slate-400 text-xs font-medium">Timeslot</Text>
+                                        <Text className="text-slate-700 dark:text-slate-200 text-xs ml-auto">{val.timeslot}</Text>
+                                    </View>
+                                    <View className="flex-row items-center gap-2">
+                                        <Timer size={14} color={isDark ? '#94a3b8' : '#64748b'} />
+                                        <Text className="text-slate-500 dark:text-slate-400 text-xs font-medium">Duration</Text>
+                                        <Text className="text-slate-700 dark:text-slate-200 text-xs ml-auto">{val.duration}</Text>
+                                    </View>
+                                    <View className="flex-row items-center gap-2">
+                                        <MapPin size={14} color={isDark ? '#94a3b8' : '#64748b'} />
+                                        <Text className="text-slate-500 dark:text-slate-400 text-xs font-medium">Location</Text>
+                                        <Text className="text-slate-700 dark:text-slate-200 text-xs ml-auto">{val.dormitary}</Text>
+                                    </View>
+
+                                    {/* Topics */}
+                                    {val.topics?.length > 0 && (
+                                        <View className="flex-row flex-wrap gap-1.5 mt-0.5">
+                                            {val.topics.map((t: string, i: number) => (
+                                                <View
+                                                    key={i}
+                                                    className="bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-100 dark:border-indigo-800/40 px-2.5 py-1 rounded-full"
+                                                >
+                                                    <Text className="text-indigo-600 dark:text-indigo-300 text-xs font-medium">{t}</Text>
+                                                </View>
+                                            ))}
+                                        </View>
+                                    )}
+                                </View>
+
+                                {/* Book Button */}
+                                <View className="px-4 pb-4">
+                                    <Pressable
+                                        className={`py-3.5 rounded-xl items-center flex-row justify-center gap-2 active:opacity-80 ${buyingId === val._id
+                                            ? 'bg-slate-400 dark:bg-slate-600'
+                                            : 'bg-indigo-600 dark:bg-indigo-700'
+                                            }`}
+                                        disabled={buyingId === val._id}
+                                        onPress={() => {
+                                            if (isTimeslotExpired(val.timeslot)) {
+                                                Alert.alert('⏰ Time Slot Expired', 'This session\'s time slot has already passed.');
+                                                setCourses((prev) => prev.filter((c) => c._id !== val._id));
+                                                return;
+                                            }
+                                            Alert.alert(
+                                                'Confirm Booking',
+                                                `Book "${val.title}" for ${val.cost} coins?`,
+                                                [
+                                                    { text: 'Cancel', style: 'cancel' },
+                                                    {
+                                                        text: 'Confirm',
+                                                        onPress: async () => {
+                                                            if (isTimeslotExpired(val.timeslot)) {
+                                                                Alert.alert('⏰ Time Slot Expired', 'This session\'s time slot has already passed.');
+                                                                setCourses((prev) => prev.filter((c) => c._id !== val._id));
+                                                                return;
+                                                            }
+                                                            setBuyingId(val._id);
+                                                            const token = await AsyncStorage.getItem('token');
+                                                            try {
+                                                                const res = await fetch(`${BACKEND_URI}/api/user/buycourse`, {
+                                                                    method: 'POST',
+                                                                    headers: {
+                                                                        'authorization': token!,
+                                                                        'Content-Type': 'application/json',
+                                                                    },
+                                                                    body: JSON.stringify({ courseId: val._id }),
+                                                                });
+                                                                const data = await res.json();
+                                                                if (res.ok) {
+                                                                    setCourses((prev) => prev.filter((c) => c._id !== val._id));
+                                                                    if (user) setUser({ ...user, coins: data.coins });
+                                                                    Alert.alert(
+                                                                        '✅ Booked!',
+                                                                        `Successfully booked "${val.title}"!\n\n📅 ${data.timeslot}\n📍 ${data.dormitary}\n\nCoins remaining: ${data.coins}`,
+                                                                    );
+                                                                } else {
+                                                                    Alert.alert('Error', data.message || 'Could not book course');
+                                                                }
+                                                            } catch (e) {
+                                                                Alert.alert('Error', 'Network error. Please try again.');
+                                                            } finally {
+                                                                setBuyingId(null);
+                                                            }
+                                                        },
+                                                    },
+                                                ]
+                                            );
+                                        }}
+                                    >
+                                        {buyingId === val._id ? (
+                                            <ActivityIndicator size="small" color="white" />
+                                        ) : (
+                                            <View pointerEvents="none" style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                                                <ShoppingCart size={16} color="white" />
+                                                <Text className="text-white font-bold text-sm">Book for {val.cost} coins</Text>
+                                            </View>
+                                        )}
+                                    </Pressable>
+                                </View>
+                            </View>
+                        )))}
+                </ScrollView>
+            ) : (
+                <View className="flex-1 justify-center items-center py-20">
+                    <Text className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                        No courses match your filters
+                    </Text>
                 </View>
-            ))}
-        </ScrollView>
-    ) : (
-        <View className="flex-1 justify-center items-center py-20">
-            <Text className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                No courses match your filters
-            </Text>
-        </View>
-    )}
+            )}
         </View>
     );
 }

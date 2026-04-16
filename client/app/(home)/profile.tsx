@@ -2,8 +2,10 @@ import { View, Text, Pressable, Alert, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "@/constants/userContext";
-import { BookOpen, ShoppingBag, ShoppingCart, Coins, Users, GraduationCap } from "lucide-react-native";
+import { BookOpen, ShoppingBag, ShoppingCart, Coins, Users, GraduationCap, SquareArrowRightExit } from "lucide-react-native";
 import { useTheme } from "@/constants/ThemeContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 export default function Profile() {
   const router = useRouter();
@@ -57,7 +59,7 @@ export default function Profile() {
       <View className="mx-4 flex-row gap-3 mb-5">
         <StatCard
           label="Courses Taught"
-          value={user.mycourses?.length ?? 0}
+          value={user.mycourses?.filter((c: any) => c.assignedto && c.coinstransferred).length ?? 0}
           icon={<GraduationCap size={22} color={isDark ? '#a5b4fc' : '#6366f1'} />}
         />
         <StatCard
@@ -98,6 +100,20 @@ export default function Profile() {
             <Text className="text-slate-700 dark:text-slate-300 text-base font-bold">My Store Items</Text>
           </View>
         </Pressable>
+
+        <Pressable
+          className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 py-4 rounded-2xl flex-row items-center justify-center gap-3 active:opacity-80"
+          onPress={async () => {
+            await AsyncStorage.removeItem("token");
+            router.replace("/(auth)");
+          }}
+        >
+          <View pointerEvents="none" style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <SquareArrowRightExit size={20} color={isDark ? '#94a3b8' : '#475569'} />
+            <Text className="text-slate-700 dark:text-slate-300 text-base font-bold">Logout</Text>
+          </View>
+        </Pressable>
+
       </View>
     </SafeAreaView>
   );

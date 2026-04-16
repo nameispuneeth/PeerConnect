@@ -2,7 +2,7 @@ import { View, Text, Pressable, Alert, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "@/constants/userContext";
-import { BookOpen, ShoppingBag, ShoppingCart, Coins, Users, GraduationCap, SquareArrowRightExit } from "lucide-react-native";
+import { BookOpen, ShoppingBag, ShoppingCart, Coins, GraduationCap, SquareArrowRightExit } from "lucide-react-native";
 import { useTheme } from "@/constants/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -40,14 +40,7 @@ export default function Profile() {
           </Text>
         </View>
         <Text className="text-2xl font-extrabold text-white mb-1">{user.name}</Text>
-        <View className="flex-row items-center gap-3 mt-1">
-          <View className="flex-row items-center gap-1">
-            <Users size={13} color="rgba(255,255,255,0.75)" />
-            <Text className="text-white/75 text-xs">{user.followers} followers</Text>
-          </View>
-          <Text className="text-white/50">·</Text>
-          <Text className="text-white/75 text-xs">{user.following} following</Text>
-        </View>
+
         {/* Coins */}
         <View className="flex-row items-center gap-1.5 mt-3 bg-white/20 self-start px-3 py-1.5 rounded-full">
           <Coins size={14} color="#fbbf24" />

@@ -5,7 +5,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUser } from "@/constants/userContext";
 import { useTheme } from "@/constants/ThemeContext";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { PlusCircle, X, Calendar, Clock, ChevronLeft, ChevronRight, Check } from "lucide-react-native";
+import { PlusCircle, X, Calendar, ChevronLeft, ChevronRight, Check } from "lucide-react-native";
+import LocationPicker from "@/components/LocationPicker";
+import DurationPicker from "@/components/DurationPicker";
 
 export default function NewCourse() {
   const { setUser } = useUser();
@@ -21,8 +23,8 @@ export default function NewCourse() {
   const [duration, setDuration] = useState<string>("");
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [selectedHour, setSelectedHour] = useState<string>(new Date().getHours().toString());
-  const [selectedMinute, setSelectedMinute] = useState<string>(new Date().getMinutes().toString());
+  const [selectedHour, setSelectedHour] = useState<string>(new Date().getHours().toString().padStart(2, '0'));
+  const [selectedMinute, setSelectedMinute] = useState<string>(new Date().getMinutes().toString().padStart(2, '0'));
   const [submitting, setSubmitting] = useState(false);
 
   const formatDisplayDate = (date: Date) =>
@@ -30,12 +32,15 @@ export default function NewCourse() {
 
   const handleSubmit = async () => {
     if (submitting) return;
-    if (!timeslot || !title || !cost || !dormitary || topics.length === 0 || !duration) {
-      alert("Please fill all fields and select a timeslot");
-      return;
-    }
+    if (!title.trim()) return alert("Please enter a course title");
+    if (!cost || isNaN(Number(cost)) || Number(cost) <= 0) return alert("Please enter a valid coin cost");
+    if (!dormitary) return alert("Please select a location");
+    if (topics.length === 0) return alert("Please add at least one topic");
+    if (!duration) return alert("Please select a duration");
+    if (!timeslot) return alert("Please select a timeslot");
+
     const data = {
-      title,
+      title: title.trim(),
       cost: Number(cost),
       dormitary,
       topics,
@@ -52,7 +57,7 @@ export default function NewCourse() {
       });
       const result = await response.json();
       if (response.ok) {
-        alert("Course created successfully");
+        alert("Course created successfully!");
         setUser((prevUser) => (prevUser ? {
           ...prevUser,
           mycourses: [...prevUser.mycourses, {
@@ -65,7 +70,7 @@ export default function NewCourse() {
         alert(result.message || "Failed to create course");
       }
     } catch (e) {
-      alert("Network Issues");
+      alert("Network error. Please check your connection.");
     } finally {
       setSubmitting(false);
     }
@@ -81,15 +86,15 @@ export default function NewCourse() {
   const removeTopic = (index: number) => setTopics(topics.filter((_, i) => i !== index));
 
   const handleConfirmDateTime = () => {
+    const h = parseInt(selectedHour);
+    const m = parseInt(selectedMinute);
+    if (isNaN(h) || h < 0 || h > 23) return alert("Enter a valid hour (0–23)");
+    if (isNaN(m) || m < 0 || m > 59) return alert("Enter a valid minute (0–59)");
     const dateTime = new Date(selectedDate);
-    dateTime.setHours(parseInt(selectedHour) || 0);
-    dateTime.setMinutes(parseInt(selectedMinute) || 0);
-    if (dateTime >= new Date()) {
-      setTimeslot(dateTime);
-      setShowDatePicker(false);
-    } else {
-      alert("Please select a future date and time");
-    }
+    dateTime.setHours(h, m, 0, 0);
+    if (dateTime <= new Date()) return alert("Please select a future date and time");
+    setTimeslot(dateTime);
+    setShowDatePicker(false);
   };
 
   const inputClass = "bg-white dark:bg-slate-800 px-4 py-3.5 rounded-xl text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700 text-sm";
@@ -104,6 +109,7 @@ export default function NewCourse() {
       <ScrollView
         contentContainerStyle={{ paddingBottom: 40, paddingHorizontal: 20, paddingTop: 8 }}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         {/* Header */}
         <View className="mb-6 mt-3">
@@ -117,6 +123,7 @@ export default function NewCourse() {
 
         {/* Form Fields */}
         <View className="gap-4">
+          {/* Title */}
           <View>
             <Text className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5 ml-1">Course Title</Text>
             <TextInput
@@ -128,39 +135,24 @@ export default function NewCourse() {
             />
           </View>
 
+          {/* Cost */}
           <View>
             <Text className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5 ml-1">Cost (Coins)</Text>
             <TextInput
               placeholder="e.g. 50"
               value={cost}
               keyboardType="numeric"
-              onChangeText={setCost}
+              onChangeText={(t) => setCost(t.replace(/[^0-9]/g, ''))}
               className={inputClass}
               placeholderTextColor="#94a3b8"
             />
           </View>
 
-          <View>
-            <Text className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5 ml-1">Dormitory / Location</Text>
-            <TextInput
-              placeholder="e.g. Block C, Room 204"
-              value={dormitary}
-              onChangeText={setDormitary}
-              className={inputClass}
-              placeholderTextColor="#94a3b8"
-            />
-          </View>
+          {/* Location Picker */}
+          <LocationPicker value={dormitary} onChange={setDormitary} />
 
-          <View>
-            <Text className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5 ml-1">Duration</Text>
-            <TextInput
-              placeholder="e.g. 2 hours"
-              value={duration}
-              onChangeText={setDuration}
-              className={inputClass}
-              placeholderTextColor="#94a3b8"
-            />
-          </View>
+          {/* Duration Picker */}
+          <DurationPicker value={duration} onChange={setDuration} />
 
           {/* Topics */}
           <View>
@@ -171,6 +163,7 @@ export default function NewCourse() {
                 value={topicInput}
                 onChangeText={setTopicInput}
                 onSubmitEditing={addTopic}
+                returnKeyType="done"
                 className="flex-1 bg-white dark:bg-slate-800 px-4 py-3.5 rounded-xl text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700 text-sm"
                 placeholderTextColor="#94a3b8"
               />
@@ -250,7 +243,8 @@ export default function NewCourse() {
                   onPress={() => {
                     const newDate = new Date(selectedDate);
                     newDate.setDate(newDate.getDate() - 1);
-                    if (newDate >= new Date()) setSelectedDate(newDate);
+                    const today = new Date(); today.setHours(0,0,0,0);
+                    if (newDate >= today) setSelectedDate(newDate);
                   }}
                 >
                   <ChevronLeft size={20} color={isDark ? '#94a3b8' : '#475569'} />
@@ -273,41 +267,45 @@ export default function NewCourse() {
 
             {/* Time Picker */}
             <View className="mb-5">
-              <Text className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2 ml-1">Time</Text>
+              <Text className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2 ml-1">Time (24 hr)</Text>
               <View className="flex-row items-center justify-center gap-3">
                 <View className="flex-1">
-                  <Text className="text-center text-slate-500 dark:text-slate-400 text-xs mb-1">Hour</Text>
+                  <Text className="text-center text-slate-500 dark:text-slate-400 text-xs mb-1">Hour (0–23)</Text>
                   <TextInput
                     value={selectedHour}
                     onChangeText={(text) => {
-                      if (text === '') { setSelectedHour(''); return; }
-                      const num = parseInt(text);
-                      if (!isNaN(num) && num >= 0 && num <= 23) setSelectedHour(text);
+                      const clean = text.replace(/[^0-9]/g, '');
+                      if (clean === '') { setSelectedHour(''); return; }
+                      const num = parseInt(clean);
+                      if (num <= 23) setSelectedHour(clean);
                     }}
                     onBlur={() => {
-                      if (selectedHour && selectedHour.length === 1) setSelectedHour(selectedHour.padStart(2, '0'));
+                      const h = parseInt(selectedHour);
+                      setSelectedHour(isNaN(h) ? '00' : h.toString().padStart(2, '0'));
                     }}
                     placeholder="HH"
-                    keyboardType="numeric"
+                    keyboardType="number-pad"
                     maxLength={2}
                     className="bg-slate-100 dark:bg-slate-700 p-3 rounded-xl text-center text-2xl font-bold text-slate-800 dark:text-slate-100"
                   />
                 </View>
                 <Text className="text-3xl font-black text-slate-800 dark:text-slate-100 mt-4">:</Text>
                 <View className="flex-1">
-                  <Text className="text-center text-slate-500 dark:text-slate-400 text-xs mb-1">Minute</Text>
+                  <Text className="text-center text-slate-500 dark:text-slate-400 text-xs mb-1">Minute (0–59)</Text>
                   <TextInput
                     value={selectedMinute}
                     onChangeText={(text) => {
-                      if (text === '') { setSelectedMinute(''); return; }
-                      const num = parseInt(text);
-                      if (!isNaN(num) && num >= 0 && num <= 59) setSelectedMinute(text);
+                      const clean = text.replace(/[^0-9]/g, '');
+                      if (clean === '') { setSelectedMinute(''); return; }
+                      const num = parseInt(clean);
+                      if (num <= 59) setSelectedMinute(clean);
                     }}
                     onBlur={() => {
-                      if (selectedMinute && selectedMinute.length === 1) setSelectedMinute(selectedMinute.padStart(2, '0'));
+                      const m = parseInt(selectedMinute);
+                      setSelectedMinute(isNaN(m) ? '00' : m.toString().padStart(2, '0'));
                     }}
                     placeholder="MM"
-                    keyboardType="numeric"
+                    keyboardType="number-pad"
                     maxLength={2}
                     className="bg-slate-100 dark:bg-slate-700 p-3 rounded-xl text-center text-2xl font-bold text-slate-800 dark:text-slate-100"
                   />

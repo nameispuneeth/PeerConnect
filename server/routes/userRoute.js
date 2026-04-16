@@ -14,7 +14,7 @@ router.get("/profile",async(req,res)=>{
     try{
         const user=await User.findById(id).populate("mycourses").populate("mystore").populate("purchasedcourses").populate("purchaseditems");
         if(!user) return res.status(400).json({message:"No User Found"});
-        return res.status(200).json({message:"Successful",user:{name:user.username,followers:user.followers,following:user.following.length,mycourses:user.mycourses,mystore:user.mystore,coins:user.coins,boughtcourses:user.purchasedcourses,boughtitems:user.purchaseditems}});         
+        return res.status(200).json({message:"Successful",user:{name:user.username,mycourses:user.mycourses,mystore:user.mystore,coins:user.coins,boughtcourses:user.purchasedcourses,boughtitems:user.purchaseditems}});         
     }catch(e){
         console.log(e);
         res.status(500).json({message:"Server Error"});
@@ -55,13 +55,13 @@ router.get("/mycourses",async(req,res)=>{
 
 router.post("/additem",async(req,res)=>{
     const id=req.user;
-    const {title,images,currcost}=req.body;
+    const {title,images,currcost,pickup}=req.body;
     if(!title || !currcost || images.length==0) return res.status(400).json({message:"Send All Details"});
     try{
         const user=await User.findById(id);
         if(!user) return res.status(400).json({message:"No User Found"});
 
-        let newItem=await Store.create({postedby:user._id,title,images,currcost});
+        let newItem=await Store.create({postedby:user._id,title,images,currcost,pickup:pickup||''});
         if(!newItem) return res.status(400).json({message:"Unable to add Course. Try Again"});
         user.mystore.push(newItem._id);
         await user.save();
@@ -93,7 +93,10 @@ router.get("/getallitems",async(req,res)=>{
         const storeitems=(await Store.find().populate({
             path:"bids.user",
             select:"username"
-        })).filter((data)=>data.postedby!=id);
+        }).populate({
+            path:"postedby",
+            select:"username"
+        })).filter((data)=>String(data.postedby?._id ?? data.postedby)!=id);
         res.status(200).json({message:"Successful",items:storeitems,id});
     }catch(e){
         console.log(e);
@@ -104,7 +107,10 @@ router.get("/getallitems",async(req,res)=>{
 router.get("/getallcourses",async(req,res)=>{
     const id=req.user;
     try{
-        const courses=(await Course.find()).filter((data)=>data.postedby!=id);
+        const courses=(await Course.find().populate({
+            path:"postedby",
+            select:"username"
+        })).filter((data)=>String(data.postedby?._id ?? data.postedby)!=id);
         res.status(200).json({message:"Successful",courses});
 
     }catch(e){
@@ -264,6 +270,52 @@ router.put("/updatetimeslot", async (req, res) => {
     }
 });
 
+// Auto-refund: called when teacher sees a booked+expired+unverified course
+// Refunds coins to buyer and marks course as failed
+router.post("/refundcourse", async (req, res) => {
+    const teacher_id = req.user;
+    const { courseId } = req.body;
+    if (!courseId) return res.status(400).json({ message: "Send courseId" });
+    try {
+        const course = await Course.findById(courseId);
+        if (!course) return res.status(404).json({ message: "Course not found" });
+        if (String(course.postedby) !== String(teacher_id))
+            return res.status(403).json({ message: "Not your course" });
+
+        // Already handled
+        if (course.failed || course.coinstransferred)
+            return res.status(200).json({ message: "Already processed", alreadyDone: true });
+
+        // Must be booked
+        if (!course.assignedto)
+            return res.status(400).json({ message: "Course is not booked" });
+
+        // Must be expired
+        const slotDate = parseTimeslot(course.timeslot);
+        if (!slotDate || slotDate > new Date())
+            return res.status(400).json({ message: "Course has not expired yet" });
+
+        // Refund buyer
+        const buyer = await User.findById(course.assignedto);
+        if (buyer) {
+            buyer.coins += course.cost;
+            // Remove from purchasedcourses
+            buyer.purchasedcourses = buyer.purchasedcourses.filter(
+                (id) => String(id) !== String(course._id)
+            );
+            await buyer.save();
+        }
+
+        course.failed = true;
+        await course.save();
+
+        return res.status(200).json({ message: "Refund processed. Buyer's coins restored.", refunded: true });
+    } catch (e) {
+        console.log(e);
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+
 router.get("/mypurchases", async (req, res) => {
     const id = req.user;
     try {
@@ -409,7 +461,7 @@ router.post("/search", async (req, res) => {
         const searchRegex = new RegExp(query, 'i');
 
         // Search users by username
-        const users = await User.find({ username: searchRegex }).select('username followers');
+        const users = await User.find({ username: searchRegex }).select('username');
 
         // Search courses by title
         const courses = await Course.find({
@@ -435,4 +487,32 @@ router.post("/search", async (req, res) => {
     }
 });
 
-module.exports=router;
+// Get seller details: taught courses and sold items
+router.get("/seller-details/:userId", async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const user = await User.findById(userId).select("username");
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        const taughtCourses = await Course.find({
+            postedby: userId,
+            coinstransferred: true
+        });
+
+        const soldItems = await Store.find({
+            postedby: userId,
+            assignedto: { $ne: null }
+        });
+
+        res.status(200).json({
+            username: user.username,
+            taughtCourses,
+            soldItems
+        });
+    } catch (e) {
+        console.log(e);
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+
+module.exports=router;

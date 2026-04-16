@@ -39,8 +39,6 @@ function HomeLayout() {
         if (response.ok) {
           setUser({
             name: data.user.name,
-            followers: data.user.followers,
-            following: data.user.following,
             mycourses: data.user.mycourses,
             mystore: data.user.mystore,
             coins: data.user.coins,

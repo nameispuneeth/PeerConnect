@@ -4,8 +4,9 @@ import { BACKEND_URI } from '@/config/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUser } from '@/constants/userContext';
 
-import { ChevronDown, Filter } from 'lucide-react-native';
+import { ChevronDown, Filter, User } from 'lucide-react-native';
 import { useTheme } from '@/constants/ThemeContext';
+import SellerProfileModal from '@/components/SellerProfileModal';
 
 
 
@@ -262,7 +263,17 @@ export default function AllItems() {
 
                 return (
                   <View key={val._id || idx} className='border border-slate-400 dark:border-slate-600 flex flex-col mb-8 m-2 p-3 rounded-md bg-white dark:bg-slate-800 gap-2 self-center' style={{ width: CARD_WIDTH }}>
-                    <Text className='text-2xl font-bold mb-2 text-slate-800 dark:text-slate-100'>{val.title ?? "Untitled Item"}</Text>
+                    <View className='flex-row justify-between items-start mb-1'>
+                      <Text className='text-2xl font-bold text-slate-800 dark:text-slate-100 flex-1'>{val.title ?? "Untitled Item"}</Text>
+                      {val.postedby && (
+                        <SellerProfileModal userId={val.postedby._id} username={val.postedby.username}>
+                          <View className="flex-row items-center gap-1 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-600">
+                            <User size={10} color="#6366f1" />
+                            <Text className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400">{val.postedby.username}</Text>
+                          </View>
+                        </SellerProfileModal>
+                      )}
+                    </View>
                     <View className='flex flex-row gap-2 items-center'>
                       <Text className='text-slate-700 dark:text-slate-300'> Current Bid : </Text>
                       <Text className='text-slate-800 dark:text-slate-100 font-semibold'>{val.currcost} Coins</Text>

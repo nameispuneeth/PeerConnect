@@ -42,6 +42,10 @@ const courseScheme=new mongoose.Schema({
     coinstransferred:{
         type:Boolean,
         default:false
+    },
+    failed:{
+        type:Boolean,
+        default:false
     }
 });
 

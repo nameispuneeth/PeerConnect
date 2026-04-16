@@ -2,8 +2,6 @@ import { useContext,createContext,useState, SetStateAction,Dispatch } from "reac
 
 type User={
     name:string,
-    followers:number,
-    following:number,
     mycourses:any[],
     mystore:any[],
     coins:number,

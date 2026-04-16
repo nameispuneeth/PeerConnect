@@ -45,6 +45,10 @@ const storeSchema=new mongoose.Schema({
     coinstransferred:{
         type:Boolean,
         default:false
+    },
+    pickup:{
+        type:String,
+        default:''
     }
 });
 

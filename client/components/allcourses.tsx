@@ -4,8 +4,9 @@ import { BACKEND_URI } from '@/config/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useUser } from '@/constants/userContext';
-import { Clock, MapPin, Timer, Tag, ShoppingCart, Coins, Filter, ChevronDown } from 'lucide-react-native';
+import { Clock, MapPin, Timer, Tag, ShoppingCart, Coins, Filter, ChevronDown, User } from 'lucide-react-native';
 import { useTheme } from '@/constants/ThemeContext';
+import SellerProfileModal from '@/components/SellerProfileModal';
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 
@@ -246,12 +247,24 @@ export default function Allcourses() {
                             >
                                 {/* Card Header */}
                                 <View className="bg-indigo-50 dark:bg-indigo-900/30 px-4 py-3 border-b border-indigo-100 dark:border-indigo-800/40">
-                                    <Text className="text-lg font-bold text-slate-800 dark:text-slate-100">
-                                        {val.title ?? 'Untitled Course'}
-                                    </Text>
+                                    <View className="flex-row justify-between items-start">
+                                        <Text className="text-lg font-bold text-slate-800 dark:text-slate-100 flex-1 mr-2">
+                                            {val.title ?? 'Untitled Course'}
+                                        </Text>
+                                        {val.postedby && (
+                                            <SellerProfileModal userId={val.postedby._id} username={val.postedby.username}>
+                                                <View className="flex-row items-center gap-1.5 bg-white/70 dark:bg-slate-800/80 px-2 py-1 rounded-full border border-indigo-100 dark:border-indigo-800">
+                                                    <User size={10} color="#6366f1" />
+                                                    <Text className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400">
+                                                        {val.postedby.username}
+                                                    </Text>
+                                                </View>
+                                            </SellerProfileModal>
+                                        )}
+                                    </View>
                                     <View className="flex-row items-center gap-1 mt-0.5">
-                                        <View className="bg-amber-400 w-2 h-2 rounded-full" />
-                                        <Text className="text-slate-500 dark:text-slate-400 text-xs">Available</Text>
+                                        <View className="bg-amber-400 w-1.5 h-1.5 rounded-full" />
+                                        <Text className="text-slate-500 dark:text-slate-400 text-[10px] font-medium uppercase tracking-wider">Available</Text>
                                     </View>
                                 </View>
 

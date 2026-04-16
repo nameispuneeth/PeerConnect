@@ -1,10 +1,10 @@
 import { Text, View, ActivityIndicator, ScrollView, TextInput, Pressable, Alert, Modal } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useUser } from '@/constants/userContext'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { BACKEND_URI } from '@/config/api'
-import { Clock, MapPin, Timer, Tag, KeyRound, CheckCircle, AlertTriangle, Edit3, Users, ChevronLeft, ChevronRight } from 'lucide-react-native'
+import { Clock, MapPin, Timer, Tag, KeyRound, CheckCircle, AlertTriangle, Edit3, Users, ChevronLeft, ChevronRight, XCircle } from 'lucide-react-native'
 import { useTheme } from '@/constants/ThemeContext'
 
 import dayjs from "dayjs";
@@ -44,7 +44,48 @@ const Mycourses = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedHour, setSelectedHour] = useState<string>(new Date().getHours().toString());
   const [selectedMinute, setSelectedMinute] = useState<string>(new Date().getMinutes().toString());
+  const processedRefunds = useRef<Set<string>>(new Set());
 
+  // Auto-trigger refund for booked+expired+unverified courses
+  useEffect(() => {
+    if (!user) return;
+    user.mycourses.forEach((course: any) => {
+      if (
+        course._id &&
+        course.assignedto &&
+        !course.coinstransferred &&
+        !course.failed &&
+        isTimeslotExpired(course.timeslot) &&
+        !processedRefunds.current.has(course._id)
+      ) {
+        processedRefunds.current.add(course._id);
+        handleRefundCourse(course._id);
+      }
+    });
+  }, [user?.mycourses]);
+
+  const handleRefundCourse = async (courseId: string) => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const res = await fetch(`${BACKEND_URI}/api/user/refundcourse`, {
+        method: 'POST',
+        headers: { authorization: token!, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ courseId }),
+      });
+      const data = await res.json();
+      if (res.ok && data.refunded) {
+        // Mark course as failed in local state
+        if (user) {
+          const updated = user.mycourses.map((c: any) =>
+            c._id === courseId ? { ...c, failed: true } : c
+          );
+          setUser({ ...user, mycourses: updated });
+        }
+      }
+    } catch (e) {
+      console.log('Refund error:', e);
+    }
+  };
 
   if (!user) return (
     <View className='flex-1 justify-center items-center bg-slate-50 dark:bg-slate-900'>
@@ -134,8 +175,10 @@ const Mycourses = () => {
         {user.mycourses.map((val: any, idx: number) => {
           const expired = isTimeslotExpired(val.timeslot);
           const isUnbooked = !val.assignedto;
-          const showExpiredWarning = expired && isUnbooked;
-          const showExpiredBadge = expired; // show expired badge for ALL expired courses
+          const isFailed = val.failed === true; // booked+expired+no OTP = failed, refund triggered
+          const showFailedBadge = isFailed;
+          // Expired badge only for unbooked expired courses (booked+expired will be failed)
+          const showExpiredBadge = expired && !isFailed;
 
           return (
             <View
@@ -144,23 +187,29 @@ const Mycourses = () => {
               style={{ boxShadow: '0px 2px 8px rgba(0,0,0,0.06)', elevation: 2 }}
             >
               {/* Card Header */}
-              <View className={`px-4 py-3 border-b ${showExpiredBadge
-                ? 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-800/40'
-                : val.assignedto
-                  ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-100 dark:border-emerald-800/40'
-                  : 'bg-indigo-50 dark:bg-indigo-900/30 border-indigo-100 dark:border-indigo-800/40'
-                }`}>
+              <View className={`px-4 py-3 border-b ${
+                showFailedBadge
+                  ? 'bg-slate-100 dark:bg-slate-700/40 border-slate-200 dark:border-slate-600'
+                  : showExpiredBadge
+                    ? 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-800/40'
+                    : val.assignedto
+                      ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-100 dark:border-emerald-800/40'
+                      : 'bg-indigo-50 dark:bg-indigo-900/30 border-indigo-100 dark:border-indigo-800/40'
+              }`}>
                 <View className="flex-row items-start justify-between">
                   <Text className="text-lg font-bold text-slate-800 dark:text-slate-100 flex-1 mr-2">
                     {val.title ?? 'Untitled Course'}
                   </Text>
-                  {/* Status Badge — Expired takes priority */}
-                  {showExpiredBadge ? (
+                  {/* Status Badge — Failed > Expired > Booked > Open */}
+                  {showFailedBadge ? (
+                    <View className="bg-slate-500 dark:bg-slate-600 px-2.5 py-1 rounded-full">
+                      <Text className="text-white text-xs font-bold">Failed</Text>
+                    </View>
+                  ) : showExpiredBadge ? (
                     <View className="flex-row items-center gap-1">
                       <View className="bg-red-500 px-2.5 py-1 rounded-full">
                         <Text className="text-white text-xs font-bold">Expired</Text>
                       </View>
-                      {/* Edit icon button */}
                       <Pressable
                         className="bg-red-100 dark:bg-red-900/40 p-1.5 rounded-full active:opacity-70"
                         onPress={() => { setEditingCourseId(val._id); setEditingCourseTitle(val.title ?? ''); setNewTimeslot(''); }}
@@ -221,7 +270,22 @@ const Mycourses = () => {
                 )}
               </View>
 
-              {/* Expired Warning — shown for ALL expired courses */}
+              {/* Failed Banner — session expired with no OTP, coins refunded to buyer */}
+              {showFailedBadge && (
+                <View className="mx-4 mb-3 bg-slate-100 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl p-4 gap-2">
+                  <View className="flex-row items-center gap-2">
+                    <XCircle size={18} color={isDark ? '#94a3b8' : '#64748b'} />
+                    <Text className="text-slate-700 dark:text-slate-300 font-bold text-sm flex-1">
+                      Session Failed — OTP was not verified
+                    </Text>
+                  </View>
+                  <Text className="text-slate-500 dark:text-slate-400 text-xs">
+                    The time slot passed without OTP confirmation. The student's {val.cost} coins have been automatically refunded.
+                  </Text>
+                </View>
+              )}
+
+              {/* Expired Warning — shown for unbooked expired courses only */}
               {showExpiredBadge && (
                 <View className="mx-4 mb-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-xl p-4 gap-3">
                   <View className="flex-row items-center gap-2">
@@ -394,16 +458,16 @@ const Mycourses = () => {
                 </View>
               )}
 
-              {/* Student Booked Banner */}
-              {val.assignedto && (
+              {/* Student Booked Banner — hide if failed */}
+              {val.assignedto && !isFailed && (
                 <View className="mx-4 mb-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-3 flex-row items-center gap-2">
                   <Users size={16} color={isDark ? '#60a5fa' : '#2563eb'} />
                   <Text className="text-blue-700 dark:text-blue-300 font-semibold text-sm">A student has booked this session</Text>
                 </View>
               )}
 
-              {/* OTP Verification */}
-              {val.assignedto && !val.coinstransferred && (
+              {/* OTP Verification — hide if failed */}
+              {val.assignedto && !val.coinstransferred && !isFailed && (
                 <View className="px-4 pb-4 pt-0 border-t border-slate-100 dark:border-slate-700 gap-3">
                   <Text className="font-bold text-slate-700 dark:text-slate-300 text-sm mt-3">
                     Verify OTP to Claim Coins

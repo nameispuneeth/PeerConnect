@@ -162,7 +162,6 @@ export default function Explore() {
                 {searchResults.users.map((user: any, idx: number) => (
                   <View key={idx} className={`p-3 rounded-lg mb-2 ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                     <Text className={`font-semibold ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>{user.username}</Text>
-                    <Text className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{user.followers} followers</Text>
                   </View>
                 ))}
               </View>

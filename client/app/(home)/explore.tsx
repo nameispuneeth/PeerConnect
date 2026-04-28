@@ -85,7 +85,7 @@ export default function Explore() {
 
   return (
     <SafeAreaView className={`flex-1 ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 20 }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 50 }} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View className="px-4 py-4 gap-3">
           <Text className={`text-2xl font-bold ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>Explore</Text>
@@ -138,17 +138,15 @@ export default function Explore() {
                 <TouchableOpacity
                   key={tab}
                   onPress={() => setActiveTab(tab as any)}
-                  className={`flex-1 py-2 rounded-md ${
-                    activeTab === tab
-                      ? 'bg-white dark:bg-slate-700'
-                      : ''
-                  }`}
+                  className={`flex-1 py-2 rounded-md ${activeTab === tab
+                    ? 'bg-white dark:bg-slate-700'
+                    : ''
+                    }`}
                 >
-                  <Text className={`text-xs font-semibold text-center capitalize ${
-                    activeTab === tab
-                      ? 'text-indigo-600 dark:text-indigo-300'
-                      : 'text-slate-600 dark:text-slate-400'
-                  }`}>
+                  <Text className={`text-xs font-semibold text-center capitalize ${activeTab === tab
+                    ? 'text-indigo-600 dark:text-indigo-300'
+                    : 'text-slate-600 dark:text-slate-400'
+                    }`}>
                     {tab === 'all' ? 'All' : tab}
                   </Text>
                 </TouchableOpacity>
@@ -193,7 +191,7 @@ export default function Explore() {
                         <Text style={{ marginBottom: 6, color: isDark ? '#cbd5e1' : '#334155', fontSize: 12 }}>Min Cost</Text>
                         <TextInput
                           value={courseFilters.minCost}
-                          onChangeText={(val) => setCourseFilters({...courseFilters, minCost: val})}
+                          onChangeText={(val) => setCourseFilters({ ...courseFilters, minCost: val })}
                           placeholder="Min cost in coins"
                           keyboardType="numeric"
                           placeholderTextColor={isDark ? '#64748b' : '#94a3b8'}
@@ -212,7 +210,7 @@ export default function Explore() {
                         <Text style={{ marginBottom: 6, color: isDark ? '#cbd5e1' : '#334155', fontSize: 12 }}>Max Cost</Text>
                         <TextInput
                           value={courseFilters.maxCost}
-                          onChangeText={(val) => setCourseFilters({...courseFilters, maxCost: val})}
+                          onChangeText={(val) => setCourseFilters({ ...courseFilters, maxCost: val })}
                           placeholder="Max cost in coins"
                           keyboardType="numeric"
                           placeholderTextColor={isDark ? '#64748b' : '#94a3b8'}
@@ -301,7 +299,7 @@ export default function Explore() {
                         <Text style={{ marginBottom: 6, color: isDark ? '#cbd5e1' : '#334155', fontSize: 12 }}>Min Cost</Text>
                         <TextInput
                           value={itemFilters.minCost}
-                          onChangeText={(val) => setItemFilters({...itemFilters, minCost: val})}
+                          onChangeText={(val) => setItemFilters({ ...itemFilters, minCost: val })}
                           placeholder="Min cost in coins"
                           keyboardType="numeric"
                           placeholderTextColor={isDark ? '#64748b' : '#94a3b8'}
@@ -320,7 +318,7 @@ export default function Explore() {
                         <Text style={{ marginBottom: 6, color: isDark ? '#cbd5e1' : '#334155', fontSize: 12 }}>Max Cost</Text>
                         <TextInput
                           value={itemFilters.maxCost}
-                          onChangeText={(val) => setItemFilters({...itemFilters, maxCost: val})}
+                          onChangeText={(val) => setItemFilters({ ...itemFilters, maxCost: val })}
                           placeholder="Max cost in coins"
                           keyboardType="numeric"
                           placeholderTextColor={isDark ? '#64748b' : '#94a3b8'}
